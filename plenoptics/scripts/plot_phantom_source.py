@@ -120,7 +120,10 @@ for cmapkey in CMAPS:
         fig = sebplt.figure(
             style={"rows": NPIX, "cols": NPIX, "fontsize": 1.0}
         )
-        ax = sebplt.add_axes(fig=fig, span=[0.0, 0.0, 1, 1],)
+        ax = sebplt.add_axes(
+            fig=fig,
+            span=[0.0, 0.0, 1, 1],
+        )
         ax.set_aspect("equal")
         cmap = ax.pcolormesh(
             np.rad2deg(image_edge_bin["edges"]),
@@ -128,7 +131,9 @@ for cmapkey in CMAPS:
             np.transpose(img) / img_vmax,
             cmap=cmapkey,
             norm=sebplt.plt_colors.PowerNorm(
-                gamma=CMAPS[cmapkey]["gamma"], vmin=0.0, vmax=1.0,
+                gamma=CMAPS[cmapkey]["gamma"],
+                vmin=0.0,
+                vmax=1.0,
             ),
         )
         sebplt.ax_add_circle(
@@ -189,7 +194,10 @@ fig_filename = "phantom_source_meshes.jpg"
 fig_path = os.path.join(out_dir, fig_filename)
 
 fig = sebplt.figure(style={"rows": 1280, "cols": 1280, "fontsize": 1.0})
-ax = sebplt.add_axes(fig=fig, span=[0.0, 0.0, 1, 1],)
+ax = sebplt.add_axes(
+    fig=fig,
+    span=[0.0, 0.0, 1, 1],
+)
 for mesh in phantom_source_mesh:
     phantom_source.plot.ax_add_mesh(ax=ax, mesh=mesh, color="k")
 ax.set_aspect("equal")
@@ -260,7 +268,11 @@ for imesh, mesh in enumerate(phantom_source_mesh):
         linestyle="-",
     )
     sebplt.pseudo3d.ax_add_mesh(
-        ax=ax, projection=projection, mesh=mesh, color="k", linestyle="-",
+        ax=ax,
+        projection=projection,
+        mesh=mesh,
+        color="k",
+        linestyle="-",
     )
 
 fig.savefig(fig_path)

@@ -82,9 +82,12 @@ def _plot_mirror_deformations_make_jobs(work_dir):
             work_dir, "config", "mirrors", mirror_key + ".json"
         )
         for deformation_key in config["mirror_deformations"]:
-
             outpath = os.path.join(
-                work_dir, "plots", "mirrors", mirror_key, deformation_key,
+                work_dir,
+                "plots",
+                "mirrors",
+                mirror_key,
+                deformation_key,
             )
 
             mirror_deformations_path = os.path.join(
@@ -189,7 +192,8 @@ def _run_script(script, argv):
         script += ".py"
 
     script_path = pkg_resources.resource_filename(
-        "plenoptics", os.path.join("scripts", script),
+        "plenoptics",
+        os.path.join("scripts", script),
     )
     args = []
     args.append("python")

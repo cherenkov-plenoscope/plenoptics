@@ -27,8 +27,10 @@ os.makedirs(out_dir, exist_ok=True)
 
 config = json_utils.tree.read(os.path.join(work_dir, "config"))
 
-__INSTRUMENTS = plenoptics.analysis.guide_stars.list_instruments_observing_guide_stars(
-    config=config
+__INSTRUMENTS = (
+    plenoptics.analysis.guide_stars.list_instruments_observing_guide_stars(
+        config=config
+    )
 )
 # sort low number to high
 _nn = [int(instrument_key[4]) for instrument_key in __INSTRUMENTS]
@@ -99,7 +101,6 @@ oa_bin_edges_deg = (
 psf_vs_oa_stats = {}
 psf_vs_oa = {}
 for instrument_key in INSTRUMENTS:
-
     st = [[] for i in range(num_oa_bins)]
 
     for oa in range(len(psf[instrument_key])):
@@ -132,7 +133,8 @@ for instrument_key in INSTRUMENTS:
         psf_vs_oa[instrument_key]["median_spread_68"][
             b
         ] = plenoptics.analysis.statistical_estimators.median_spread(
-            a=psf_vs_oa_stats[instrument_key][b], containment=0.68,
+            a=psf_vs_oa_stats[instrument_key][b],
+            containment=0.68,
         )
         psf_vs_oa[instrument_key]["num"][b] = len(
             psf_vs_oa_stats[instrument_key][b]
@@ -216,7 +218,6 @@ for PLOT in PLOTS:
     ax_deg2.set_ylabel(r"(1$^{\circ}$)$^2$")
 
     for instrument_key in PLOT["instruments"]:
-
         if "diag9" in instrument_key:
             linestyle = "-"
             label = "P-61"
@@ -245,7 +246,7 @@ for PLOT in PLOTS:
 
         sebplt.ax_add_histogram(
             ax=ax_usr,
-            bin_edges=oa_bin_edges_deg ** 2,
+            bin_edges=oa_bin_edges_deg**2,
             bincounts=sa_usr,
             linestyle=linestyle,
             linecolor="k",
@@ -285,7 +286,8 @@ for instrument_key in INSTRUMENTS:
     off_axis_weight = np.pi * psf[instrument_key]["cc_deg"] ** 2
     off_axis_weight /= np.sum(off_axis_weight)
     average_angle80_rad[instrument_key] = np.average(
-        psf[instrument_key]["angle80_rad"], weights=off_axis_weight,
+        psf[instrument_key]["angle80_rad"],
+        weights=off_axis_weight,
     )
 
 # export average

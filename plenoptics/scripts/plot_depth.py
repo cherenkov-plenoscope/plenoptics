@@ -118,7 +118,8 @@ theory_depth_minus_m = []
 theory_depth_plus_m = []
 for g in theory_depth_m:
     g_p, g_m = plenopy.thin_lens.resolution_of_depth(
-        object_distance_m=g, **plenoscope,
+        object_distance_m=g,
+        **plenoscope,
     )
     theory_depth_minus_m.append(g_m)
     theory_depth_plus_m.append(g_p)
@@ -129,7 +130,8 @@ theory_depth_paxel_minus_m = []
 theory_depth_paxel_plus_m = []
 for g in theory_depth_m:
     g_p, g_m = plenopy.thin_lens.resolution_of_depth(
-        object_distance_m=g, **paxelscope,
+        object_distance_m=g,
+        **paxelscope,
     )
     theory_depth_paxel_minus_m.append(g_m)
     theory_depth_paxel_plus_m.append(g_p)

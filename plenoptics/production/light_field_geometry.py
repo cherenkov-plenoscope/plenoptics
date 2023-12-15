@@ -78,12 +78,14 @@ def make_sceneries_run_job(job):
         mirror_deformation=mirror_deformation,
     )
 
-    merlict_scenery = instruments.scenery.make_plenoscope_scenery_aligned_deformed(
-        mirror_dimensions=mirror_dimensions,
-        mirror_deformation_map=mirror_deformation_map,
-        sensor_dimensions=sensor_dimensions,
-        sensor_transformation=sensor_transformation,
-        num_paxel_on_pixel_diagonal=num_paxel_on_pixel_diagonal,
+    merlict_scenery = (
+        instruments.scenery.make_plenoscope_scenery_aligned_deformed(
+            mirror_dimensions=mirror_dimensions,
+            mirror_deformation_map=mirror_deformation_map,
+            sensor_dimensions=sensor_dimensions,
+            sensor_transformation=sensor_transformation,
+            num_paxel_on_pixel_diagonal=num_paxel_on_pixel_diagonal,
+        )
     )
 
     scenery_dir = os.path.join(instrument_dir, "input", "scenery")
@@ -107,7 +109,6 @@ def map_and_reduce_make_jobs(work_dir):
         )
 
         if not os.path.exists(light_field_geometry_dir):
-
             map_dir = os.path.join(instrument_dir, "light_field_geometry.map")
             os.makedirs(map_dir, exist_ok=True)
 
@@ -151,7 +152,9 @@ def reduce_run_job(job):
     config = json_utils.tree.read(os.path.join(job["work_dir"], "config"))
 
     instrument_dir = os.path.join(
-        job["work_dir"], "instruments", job["instrument_key"],
+        job["work_dir"],
+        "instruments",
+        job["instrument_key"],
     )
 
     map_dir = os.path.join(instrument_dir, "light_field_geometry.map")
@@ -205,7 +208,8 @@ def plot_run_job(job):
     try:
         lfg = plenopy.light_field_geometry.LightFieldGeometry(path=lfg_dir)
         plenopy.plot.light_field_geometry.save_all(
-            light_field_geometry=lfg, out_dir=plot_dir,
+            light_field_geometry=lfg,
+            out_dir=plot_dir,
         )
     except Exception as e:
         print(e)

@@ -19,7 +19,9 @@ EXAMPLE_STAR_CONFIG = {
 
 
 def make_response_to_star(
-    star_config, light_field_geometry_path, merlict_config,
+    star_config,
+    light_field_geometry_path,
+    merlict_config,
 ):
     instgeom = utils.get_instrument_geometry_from_light_field_geometry(
         light_field_geometry_path=light_field_geometry_path
@@ -27,7 +29,7 @@ def make_response_to_star(
     illum_radius = (
         1.5 * instgeom["expected_imaging_system_max_aperture_radius"]
     )
-    illum_area = np.pi * illum_radius ** 2
+    illum_area = np.pi * illum_radius**2
     num_photons = int(
         np.round(star_config["areal_photon_density_per_m2"] * illum_area)
     )
@@ -136,7 +138,6 @@ def write_photon_bunches(
 
 
 def make_source_config_from_job(job):
-
     star_cfg = json_utils.read(
         os.path.join(job["work_dir"], "config", "observations", "star.json")
     )

@@ -191,11 +191,13 @@ ymin_usr = int(10 ** np.floor(np.log10(ymin_usr)))
 ymax_usr = int(10 ** np.ceil(np.log10(ymax_usr)))
 
 fig = sebplt.figure({"rows": 1280, "cols": 1280, "fontsize": 1.5})
-ax = sebplt.add_axes(fig=fig, span=[0.2, 0.15, 0.75, 0.8],)
+ax = sebplt.add_axes(
+    fig=fig,
+    span=[0.2, 0.15, 0.75, 0.8],
+)
 sebplt.ax_add_grid(ax=ax, add_minor=True)
 
 for n, point_key in enumerate(ooo):
-
     uuu = ooo[point_key]
     spread_lim_usr = [np.min(uuu["spread_usr"]), np.max(uuu["spread_usr"])]
 

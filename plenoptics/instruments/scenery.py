@@ -48,7 +48,9 @@ def make_plenoscope_scenery_aligned_deformed(
             portal.MIRROR_REFLECTIVITY_VS_WAVELENGTH,
             portal.LENS_REFRACTION_VS_WAVELENGTH,
         ],
-        "colors": [{"name": FACET_COLOR, "rgb": [255, 91, 49]},],
+        "colors": [
+            {"name": FACET_COLOR, "rgb": [255, 91, 49]},
+        ],
         "children": [
             {
                 "type": "Frame",

@@ -3,7 +3,7 @@ from . import deformation_map
 
 
 def parabola_z(distance_to_z_axis, focal_length):
-    return 1.0 / (4.0 * focal_length) * distance_to_z_axis ** 2
+    return 1.0 / (4.0 * focal_length) * distance_to_z_axis**2
 
 
 def mirror_surface_z(x, y, focal_length, mirror_deformation_map):
@@ -13,10 +13,13 @@ def mirror_surface_z(x, y, focal_length, mirror_deformation_map):
     When the surface deforms, the facets rotate and translate accordingly.
     """
     _z_parabola = parabola_z(
-        distance_to_z_axis=np.hypot(x, y), focal_length=focal_length,
+        distance_to_z_axis=np.hypot(x, y),
+        focal_length=focal_length,
     )
     _z_deformation = deformation_map.evaluate(
-        deformation_map=mirror_deformation_map, x_m=x, y_m=y,
+        deformation_map=mirror_deformation_map,
+        x_m=x,
+        y_m=y,
     )
     return _z_parabola + _z_deformation
 
@@ -143,7 +146,10 @@ def make_facets(
             )
 
             outside_inner_disc = (
-                np.hypot(facet_center[0], facet_center[1],)
+                np.hypot(
+                    facet_center[0],
+                    facet_center[1],
+                )
                 > MIN_INNER_RADIUS_TO_PUT_FACET_CENTER
             )
 

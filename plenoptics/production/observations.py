@@ -16,7 +16,9 @@ def run(work_dir, pool, logger=json_line_logger.LoggerStdout()):
 
 
 def make_response_to_source(
-    source_config, light_field_geometry_path, merlict_config,
+    source_config,
+    light_field_geometry_path,
+    merlict_config,
 ):
     if source_config["type"] == "star":
         return sources.star.make_response_to_star(
@@ -51,7 +53,6 @@ def _tasks_make_jobs(work_dir, task_key, suffix):
     jobs = []
 
     for instrument_key in config["observations"]["instruments"]:
-
         if instrument_key not in config["instruments"]:
             continue
 
@@ -159,7 +160,8 @@ def _observations_run_job(job):
     # ------------
     outtruthpath = outpath + ".json"
     json_utils.write(
-        outtruthpath + ".incomplete", source_config,
+        outtruthpath + ".incomplete",
+        source_config,
     )
     os.rename(outtruthpath + ".incomplete", outtruthpath)
 

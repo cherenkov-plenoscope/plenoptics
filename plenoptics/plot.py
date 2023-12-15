@@ -4,7 +4,10 @@ import sebastians_matplotlib_addons as sebplt
 
 def init_cmap(vmin, vmax, key, gamma):
     _fig = sebplt.figure(style={"rows": 100, "cols": 100, "fontsize": 1.0})
-    _ax = sebplt.add_axes(fig=_fig, span=[0.15, 0.15, 0.85, 0.85],)
+    _ax = sebplt.add_axes(
+        fig=_fig,
+        span=[0.15, 0.15, 0.85, 0.85],
+    )
     cmap = _ax.pcolormesh(
         [0, 1],
         [0, 1],
@@ -106,9 +109,24 @@ def ax_psf_set_ticks(ax, image_response, grid_angle_deg, x=True, y=True, n=3):
 
 
 CMAPS = {
-    "inferno": {"gamma": 0.5, "linecolor": "white",},
-    "hot": {"gamma": 0.5, "linecolor": "white",},
-    "Blues": {"gamma": 0.5, "linecolor": "black",},
-    "binary": {"gamma": 0.5, "linecolor": "black",},
-    "magma_r": {"gamma": 0.5, "linecolor": "black",},
+    "inferno": {
+        "gamma": 0.5,
+        "linecolor": "white",
+    },
+    "hot": {
+        "gamma": 0.5,
+        "linecolor": "white",
+    },
+    "Blues": {
+        "gamma": 0.5,
+        "linecolor": "black",
+    },
+    "binary": {
+        "gamma": 0.5,
+        "linecolor": "black",
+    },
+    "magma_r": {
+        "gamma": 0.5,
+        "linecolor": "black",
+    },
 }

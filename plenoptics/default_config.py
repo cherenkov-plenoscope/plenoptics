@@ -199,10 +199,12 @@ def write_observations_config(cfg_dir, minimal):
         intensity=36 if minimal else 360
     )
     json_utils.write(
-        os.path.join(cfg_phan_dir, "phantom_source_meshes.json"), mesch_scn,
+        os.path.join(cfg_phan_dir, "phantom_source_meshes.json"),
+        mesch_scn,
     )
     json_utils.write(
-        os.path.join(cfg_phan_dir, "phantom_source_meshes_img.json"), mesh_img,
+        os.path.join(cfg_phan_dir, "phantom_source_meshes_img.json"),
+        mesh_img,
     )
     json_utils.write(
         os.path.join(cfg_phan_dir, "phantom_source_meshes_depth.json"),
@@ -234,7 +236,8 @@ def write_observations_config(cfg_dir, minimal):
         assert instrument_key in instruments
 
     json_utils.write(
-        os.path.join(cfg_obsv_dir, "instruments.json"), obs_table,
+        os.path.join(cfg_obsv_dir, "instruments.json"),
+        obs_table,
     )
 
 

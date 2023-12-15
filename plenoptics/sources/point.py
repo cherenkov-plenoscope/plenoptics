@@ -32,7 +32,7 @@ def make_response_to_point(
     illum_radius = (
         1.5 * instgeom["expected_imaging_system_max_aperture_radius"]
     )
-    illum_area = np.pi * illum_radius ** 2
+    illum_area = np.pi * illum_radius**2
     num_photons = point_config["areal_photon_density_per_m2"] * illum_area
 
     _source_edge_length = (
@@ -79,7 +79,10 @@ def make_source_config_from_job(job):
     point_cfg = json_utils.read(
         os.path.join(job["work_dir"], "config", "observations", "point.json")
     )
-    (cx_deg, cy_deg,) = corsika_primary.random.distributions.draw_x_y_in_disc(
+    (
+        cx_deg,
+        cy_deg,
+    ) = corsika_primary.random.distributions.draw_x_y_in_disc(
         prng=prng, radius=point_cfg["max_angle_off_optical_axis_deg"]
     )
     object_distance_m = corsika_primary.random.distributions.draw_power_law(
@@ -181,7 +184,8 @@ def analysis_run_job(job):
 
     try:
         plot_report(
-            report=report, path=outpath + ".jpg",
+            report=report,
+            path=outpath + ".jpg",
         )
     except:
         pass
@@ -221,10 +225,16 @@ def plot_report(report, path):
     ax = seb.add_axes(fig=fig, span=[0.2, 0.2, 0.7, 0.7])
     seb.ax_add_grid(ax=ax, add_minor=True)
     ax.plot(
-        depth_m, spread * numpho, "kx",
+        depth_m,
+        spread * numpho,
+        "kx",
     )
     ax.plot(
-        depth_m, spread * numpho, "k-", linewidth=0.5, alpha=0.5,
+        depth_m,
+        spread * numpho,
+        "k-",
+        linewidth=0.5,
+        alpha=0.5,
     )
     reco_depth_m = depth_m[np.argmin(spread)]
     ax.plot(
@@ -414,7 +424,9 @@ def estimate_depth_from_participating_beams(
 
 
 def estimate_next_focus_depth_m(
-    depths_m, spreads_pixel_per_photon, next_depths_radius_num_points,
+    depths_m,
+    spreads_pixel_per_photon,
+    next_depths_radius_num_points,
 ):
     assert next_depths_radius_num_points > 0
 
@@ -487,7 +499,7 @@ def estimate_response_to_point_source(
         emission_distance_to_aperture=emission_distance_to_aperture_m,
     )
 
-    merlict_random_seed = prng.integers(low=0, high=2 ** 32)
+    merlict_random_seed = prng.integers(low=0, high=2**32)
     (
         event,
         light_field_geometry,

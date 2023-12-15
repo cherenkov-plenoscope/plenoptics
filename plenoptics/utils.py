@@ -9,7 +9,8 @@ def guess_scaling_of_num_photons_used_to_estimate_light_field_geometry(
 
 
 def get_instrument_geometry_from_light_field_geometry(
-    light_field_geometry=None, light_field_geometry_path=None,
+    light_field_geometry=None,
+    light_field_geometry_path=None,
 ):
     if light_field_geometry_path:
         assert light_field_geometry is None

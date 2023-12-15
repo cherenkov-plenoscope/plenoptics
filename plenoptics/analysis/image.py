@@ -47,9 +47,10 @@ def compute_image(
         light_field_geometry=light_field_geometry
     )
 
-    (image_beams_cx, image_beams_cy,) = image_rays.cx_cy_in_object_distance(
-        object_distance
-    )
+    (
+        image_beams_cx,
+        image_beams_cy,
+    ) = image_rays.cx_cy_in_object_distance(object_distance)
     image_beams_cx_std = light_field_geometry.cx_std
     image_beams_cy_std = light_field_geometry.cy_std
 
@@ -91,7 +92,14 @@ def read_image(path):
 
 
 def histogram2d_std(
-    x, y, x_std, y_std, weights, bins, prng, num_sub_samples=10,
+    x,
+    y,
+    x_std,
+    y_std,
+    weights,
+    bins,
+    prng,
+    num_sub_samples=10,
 ):
     num_samples = len(x)
     assert len(y) == num_samples
@@ -112,12 +120,10 @@ def histogram2d_std(
     counts = np.zeros(shape=(num_bins_x, num_bins_y))
 
     for i in range(num_samples):
-
         if weights[i] == 0:
             continue
 
         for s in range(num_sub_samples):
-
             rx = prng.normal(loc=x[i], scale=x_std[i])
             ry = prng.normal(loc=y[i], scale=y_std[i])
 

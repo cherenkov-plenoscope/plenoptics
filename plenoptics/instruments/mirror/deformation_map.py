@@ -6,20 +6,30 @@ import perlin_noise
 
 
 EXAMPLE_MIRROR_DEFORMATION = {
-    "perlin_noise": {"octaves": 1.5, "seed": 43, "num_bins_on_edge": 256,},
+    "perlin_noise": {
+        "octaves": 1.5,
+        "seed": 43,
+        "num_bins_on_edge": 256,
+    },
     "amplitude_m": 55e-3,
     "offset_m": 0.0,
 }
 
 ZERO_MIRROR_DEFORMATION = {
-    "perlin_noise": {"octaves": 1.5, "seed": 43, "num_bins_on_edge": 256,},
+    "perlin_noise": {
+        "octaves": 1.5,
+        "seed": 43,
+        "num_bins_on_edge": 256,
+    },
     "amplitude_m": 0.0,
     "offset_m": 0.0,
 }
 
 
 def init_from_mirror_and_deformation_configs(
-    mirror_dimensions, mirror_deformation, amplitude_scaleing=1.0,
+    mirror_dimensions,
+    mirror_deformation,
+    amplitude_scaleing=1.0,
 ):
     mc = mirror_dimensions
     md = mirror_deformation
@@ -69,11 +79,15 @@ def init_from_perlin_noise(
     perlin_noise_num_bins_on_edge,
 ):
     png = perlin_noise.PerlinNoise(
-        octaves=perlin_noise_octaves, seed=perlin_noise_seed,
+        octaves=perlin_noise_octaves,
+        seed=perlin_noise_seed,
     )
 
     N = perlin_noise_num_bins_on_edge
-    z_map = np.zeros(shape=(N, N), dtype=np.float32,)
+    z_map = np.zeros(
+        shape=(N, N),
+        dtype=np.float32,
+    )
 
     for x in range(N):
         for y in range(N):
@@ -84,7 +98,10 @@ def init_from_perlin_noise(
     z_map -= np.mean(z_map)
     z_map += offset_m
 
-    return init_from_z_map(z_map=z_map, mirror_diameter_m=mirror_diameter_m,)
+    return init_from_z_map(
+        z_map=z_map,
+        mirror_diameter_m=mirror_diameter_m,
+    )
 
 
 def evaluate(deformation_map, x_m, y_m):

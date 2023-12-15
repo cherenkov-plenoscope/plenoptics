@@ -36,7 +36,7 @@ def make_response_to_mesh(
         prng=prng,
         emission_distance_to_aperture=emission_distance_to_aperture_m,
     )
-    merlict_random_seed = prng.integers(low=0, high=2 ** 32)
+    merlict_random_seed = prng.integers(low=0, high=2**32)
 
     with tempfile.TemporaryDirectory(
         prefix="plenoscope-aberration-demo_"

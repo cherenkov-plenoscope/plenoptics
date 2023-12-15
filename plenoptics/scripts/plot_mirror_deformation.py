@@ -13,13 +13,19 @@ import binning_utils
 
 argparser = argparse.ArgumentParser()
 argparser.add_argument(
-    "dimensions_path", metavar="DIMENSIONS_PATH", type=str,
+    "dimensions_path",
+    metavar="DIMENSIONS_PATH",
+    type=str,
 )
 argparser.add_argument(
-    "deformations_path", metavar="DEFORMATIONS_PATH", type=str,
+    "deformations_path",
+    metavar="DEFORMATIONS_PATH",
+    type=str,
 )
 argparser.add_argument(
-    "plot_dir", metavar="PLOT_DIR", type=str,
+    "plot_dir",
+    metavar="PLOT_DIR",
+    type=str,
 )
 args = argparser.parse_args()
 
@@ -54,7 +60,8 @@ demfap = abe.instruments.mirror.deformation_map.init_from_mirror_and_deformation
 )
 
 facets = abe.instruments.mirror.make_facets(
-    mirror_dimensions=mirror_dimensions, mirror_deformation_map=demfap,
+    mirror_dimensions=mirror_dimensions,
+    mirror_deformation_map=demfap,
 )
 
 STEP_Z_M = 0.005
@@ -74,7 +81,9 @@ for facet in facets:
     facets_x_m.append(x)
     facets_y_m.append(y)
     z = abe.instruments.mirror.deformation_map.evaluate(
-        deformation_map=demfap, x_m=x, y_m=y,
+        deformation_map=demfap,
+        x_m=x,
+        y_m=y,
     )
     facets_z_m.append(z)
 

@@ -64,7 +64,8 @@ def make_point_source_report(
         time_fwhm_start,
         time_fwhm_stop,
     ) = statistical_estimators.full_width_half_maximum(
-        x=cres["time"]["bin_centers"], f=cres["time"]["weights"],
+        x=cres["time"]["bin_centers"],
+        f=cres["time"]["weights"],
     )
 
     # export
@@ -109,7 +110,9 @@ def make_norm_image(point_source_report):
 
 
 def calibrate_plenoscope_response(
-    raw_sensor_response, light_field_geometry, object_distance,
+    raw_sensor_response,
+    light_field_geometry,
+    object_distance,
 ):
     image_rays = plenopy.image.ImageRays(
         light_field_geometry=light_field_geometry

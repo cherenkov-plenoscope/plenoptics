@@ -52,7 +52,9 @@ for cmap_key in CMAPS:
     os.makedirs(cmap_dir, exist_ok=True)
 
     fig_filename = "instrument_{:s}_star_{:s}_cmap_{:s}.jpg".format(
-        instrument_key, star_key, cmap_key,
+        instrument_key,
+        star_key,
+        cmap_key,
     )
     fig_path = os.path.join(cmap_dir, fig_filename)
 
@@ -61,18 +63,27 @@ for cmap_key in CMAPS:
 
     fig_psf = sebplt.figure(style={"rows": 640, "cols": cols, "fontsize": 1.5})
 
-    (bin_edges_cx, bin_edges_cy,) = abe.analysis.image.binning_image_bin_edges(
+    (
+        bin_edges_cx,
+        bin_edges_cy,
+    ) = abe.analysis.image.binning_image_bin_edges(
         binning=point_source_report["image"]["binning"]
     )
     bin_edges_cx_deg = np.rad2deg(bin_edges_cx)
     bin_edges_cy_deg = np.rad2deg(bin_edges_cy)
-    (ticks_cx_deg, ticks_cy_deg,) = abe.plot.make_explicit_cx_cy_ticks(
+    (
+        ticks_cx_deg,
+        ticks_cy_deg,
+    ) = abe.plot.make_explicit_cx_cy_ticks(
         image_response=point_source_report, tick_angle=GRID_ANGLE_DEG
     )
 
     ax_xlow = 0.25 if hasy else 0.0
     ax_xwid = 0.75 if hasy else 1.0
-    ax_psf = sebplt.add_axes(fig=fig_psf, span=[ax_xlow, 0.15, ax_xwid, 0.85],)
+    ax_psf = sebplt.add_axes(
+        fig=fig_psf,
+        span=[ax_xlow, 0.15, ax_xwid, 0.85],
+    )
     ax_psf.set_aspect("equal")
 
     image_response_norm = abe.analysis.point_source_report.make_norm_image(
@@ -85,7 +96,9 @@ for cmap_key in CMAPS:
         np.transpose(image_response_norm) / cmap_vmax,
         cmap=cmap_key,
         norm=sebplt.plt_colors.PowerNorm(
-            gamma=CMAPS[cmap_key]["gamma"], vmin=0.0, vmax=1.0,
+            gamma=CMAPS[cmap_key]["gamma"],
+            vmin=0.0,
+            vmax=1.0,
         ),
     )
     sebplt.ax_add_grid_with_explicit_ticks(
