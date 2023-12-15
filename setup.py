@@ -1,20 +1,36 @@
-import setuptools
 import os
+import setuptools
 
-with open("README.md", "r") as f:
+with open("README.rst", "r", encoding="utf-8") as f:
     long_description = f.read()
 
+
+with open(os.path.join("plenoptics", "version.py")) as f:
+    txt = f.read()
+    last_line = txt.splitlines()[-1]
+    version_string = last_line.split()[-1]
+    version = version_string.strip("\"'")
+
+
 setuptools.setup(
-    name="plenoptics",
-    version="0.0.2",
-    description="A simple simulation to show the power of plenoptic perception",
+    name="plenoptics_cherenkov-plenoscope-project",
+    version=version,
+    description=(
+        "Demonstrates the power of plenoptic perception on "
+        "deformed and misaligned plenoscopes"
+    ),
     long_description=long_description,
-    url="https://github.com/cherenkov-plenoscope",
+    long_description_content_type="text/x-rst",
+    url="https://github.com/cherenkov-plenoscope/plenoptics",
     author="Sebastian Achim Mueller",
     author_email="sebastian-achim.mueller@mpi-hd.mpg.de",
-    license="MIT",
     packages=[
         "plenoptics",
+        "plenoptics.instruments",
+        "plenoptics.instruments.mirror",
+        "plenoptics.sources",
+        "plenoptics.analysis",
+        "plenoptics.production",
     ],
     package_data={
         "plenoptics": [

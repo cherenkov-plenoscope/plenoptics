@@ -1,3 +1,4 @@
+from .version import __version__
 from . import default_config
 from . import production
 from . import sources
