@@ -31,13 +31,18 @@ setuptools.setup(
         "plenoptics.sources",
         "plenoptics.analysis",
         "plenoptics.production",
+        "plenoptics.production.merlict_cpp",
     ],
     package_data={
         "plenoptics": [
             os.path.join("scripts", "*"),
         ],
     },
-    install_requires=["perlin_noise"],
+    install_requires=[
+        "perlin_noise",
+        "json_utils_sebastian-achim-mueller",
+
+    ],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",

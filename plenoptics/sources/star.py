@@ -1,12 +1,12 @@
 import corsika_primary
 import numpy as np
 import json_utils
-import plenoirf
 import plenopy
 import os
 import tempfile
 from .. import utils
 from .. import analysis
+from .. import production
 
 
 EXAMPLE_STAR_CONFIG = {
@@ -61,7 +61,7 @@ def make_response_to_star(
             merlict_config["merlict_propagation_config"],
         )
 
-        plenoirf.production.merlict.plenoscope_propagator(
+        production.merlict_cpp.plenoscope_propagator(
             corsika_run_path=star_light_path,
             output_path=run_path,
             light_field_geometry_path=light_field_geometry_path,
