@@ -31,7 +31,6 @@ setuptools.setup(
         "plenoptics.sources",
         "plenoptics.analysis",
         "plenoptics.production",
-        "plenoptics.production.merlict_cpp",
     ],
     package_data={
         "plenoptics": [
@@ -41,7 +40,7 @@ setuptools.setup(
     install_requires=[
         "perlin_noise",
         "json_utils_sebastian-achim-mueller",
-
+        "merlict_development_kit_python_cherenkov-plenoscope-project",
     ],
     classifiers=[
         "Programming Language :: Python :: 3",

@@ -4,6 +4,8 @@ import json_utils
 import plenopy
 import os
 import tempfile
+import merlict_development_kit_python
+
 from .. import utils
 from .. import analysis
 from .. import production
@@ -61,7 +63,7 @@ def make_response_to_star(
             merlict_config["merlict_propagation_config"],
         )
 
-        production.merlict_cpp.plenoscope_propagator(
+        merlict_development_kit_python.plenoscope_propagator.plenoscope_propagator(
             corsika_run_path=star_light_path,
             output_path=run_path,
             light_field_geometry_path=light_field_geometry_path,

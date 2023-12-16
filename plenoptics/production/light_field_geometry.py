@@ -5,11 +5,11 @@ import numpy as np
 import json_line_logger
 import plenopy
 import shutil
+import merlict_development_kit_python
 
 from .. import instruments
 from .. import merlict
 from .. import utils
-from . import merlict_cpp
 
 
 def run(work_dir, pool, logger=json_line_logger.LoggerStdout()):
@@ -23,7 +23,9 @@ def run(work_dir, pool, logger=json_line_logger.LoggerStdout()):
     logger.info("lfg: Populating statistics of beams")
     mjobs, rjobs = map_and_reduce_make_jobs(work_dir=work_dir)
     logger.info("lfg: {:d} jobs to do".format(len(mjobs)))
-    pool.map(merlict_cpp.light_field_calibration.run_job, mjobs)
+    pool.map(
+        merlict_development_kit_python.light_field_calibration.run_job, mjobs
+    )
     pool.map(reduce_run_job, rjobs)
     logger.info("lfg: Statistics of beams done")
 
@@ -124,7 +126,7 @@ def map_and_reduce_make_jobs(work_dir):
                 num_paxel_on_pixel_diagonal=num_paxel_on_pixel_diagonal
             )
 
-            _jobs = merlict_cpp.light_field_calibration.make_jobs(
+            _jobs = merlict_development_kit_python.light_field_calibration.make_jobs(
                 merlict_map_path=config["merlict"]["executables"][
                     "merlict_plenoscope_calibration_map_path"
                 ],
@@ -160,7 +162,7 @@ def reduce_run_job(job):
     map_dir = os.path.join(instrument_dir, "light_field_geometry.map")
     out_dir = os.path.join(instrument_dir, "light_field_geometry")
 
-    rc = merlict_cpp.light_field_calibration.reduce(
+    rc = merlict_development_kit_python.light_field_calibration.reduce(
         merlict_reduce_path=config["merlict"]["executables"][
             "merlict_plenoscope_calibration_reduce_path"
         ],
