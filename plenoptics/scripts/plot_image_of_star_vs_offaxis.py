@@ -1,6 +1,6 @@
 #!/usr/bin/python
 import os
-import plenoirf
+from atmospheric_cherenkov_response import plot as acr_plot
 import numpy as np
 import solid_angle_utils
 import plenoptics
@@ -10,7 +10,7 @@ import argparse
 import pandas
 
 sebplt.matplotlib.rcParams.update(
-    plenoirf.summary.figure.MATPLOTLIB_RCPARAMS_LATEX
+    acr_plot.config()["rcParams"]
 )
 
 argparser = argparse.ArgumentParser()
@@ -197,8 +197,8 @@ ylim_usr = SOLID_ANGLE_SCALE * np.array(
 )
 
 for PLOT in PLOTS:
-    fig = sebplt.figure(style={"rows": 1440, "cols": 1280, "fontsize": 1})
-    ax_usr = sebplt.add_axes(fig, [0.12, 0.08, 0.77, 0.9])
+    fig = sebplt.figure(style={"rows": 1440, "cols": 1280, "fontsize": 1.25})
+    ax_usr = sebplt.add_axes(fig, [0.12, 0.1, 0.77, 0.87])
     sebplt.ax_add_grid(ax=ax_usr, add_minor=True)
     ax_deg2 = ax_usr.twinx()
     ax_deg2.spines["top"].set_visible(False)
@@ -216,6 +216,7 @@ for PLOT in PLOTS:
         np.array([SOLID_ANGLE_80_DEG2_START, SOLID_ANGLE_80_DEG2_STOP])
     )
     ax_deg2.set_ylabel(r"(1$^{\circ}$)$^2$")
+    ax_deg2.yaxis.set_label_coords(1.07, 0.5)
 
     for instrument_key in PLOT["instruments"]:
         if "diag9" in instrument_key:
