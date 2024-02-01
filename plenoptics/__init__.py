@@ -10,7 +10,7 @@ import numpy as np
 import json_utils
 import json_line_logger
 import plenopy
-import pkg_resources
+from importlib import resources as importlib_resources
 import subprocess
 
 
@@ -192,10 +192,10 @@ def _run_script(script, argv):
     if not script.endswith(".py"):
         script += ".py"
 
-    script_path = pkg_resources.resource_filename(
-        "plenoptics",
-        os.path.join("scripts", script),
+    script_path = os.path.join(
+        importlib_resources.files("plenoptics"), "scripts", script
     )
+
     args = []
     args.append("python")
     args.append(script_path)
