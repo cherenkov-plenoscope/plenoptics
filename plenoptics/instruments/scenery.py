@@ -45,8 +45,8 @@ def make_plenoscope_scenery_aligned_deformed(
 
     scn = {
         "functions": [
-            portal.MIRROR_REFLECTIVITY_VS_WAVELENGTH,
-            portal.LENS_REFRACTION_VS_WAVELENGTH,
+            portal.mirror_reflectivity_vs_wavelength(),
+            portal.lens_refraction_vs_wavelength(),
         ],
         "colors": [
             {"name": FACET_COLOR, "rgb": [255, 91, 49]},
