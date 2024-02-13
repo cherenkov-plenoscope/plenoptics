@@ -9,9 +9,7 @@ import sebastians_matplotlib_addons as sebplt
 import argparse
 import pandas
 
-sebplt.matplotlib.rcParams.update(
-    acr_plot.config()["rcParams"]
-)
+sebplt.matplotlib.rcParams.update(acr_plot.config()["rcParams"])
 
 argparser = argparse.ArgumentParser()
 argparser.add_argument("--work_dir", type=str)
