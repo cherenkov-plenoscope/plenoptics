@@ -7,6 +7,7 @@ import plenopy
 import binning_utils
 from . import mesh
 from .. import utils
+from .. import merlict
 
 
 EXAMPLE_POINT_CONFIG = {

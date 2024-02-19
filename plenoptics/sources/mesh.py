@@ -4,6 +4,7 @@ import tempfile
 import json_utils
 import os
 from .. import utils
+from .. import merlict
 
 
 EXAMPLE_MESH_CONFIG = {
@@ -52,7 +53,7 @@ def make_response_to_mesh(
         (
             event,
             light_field_geometry,
-        ) = phantom_source.merlict.make_plenopy_event_and_read_light_field_geometry(
+        ) = merlict.make_plenopy_event_and_read_light_field_geometry(
             light_fields=light_fields,
             light_field_geometry_path=light_field_geometry_path,
             merlict_propagate_config_path=merlict_plenoscope_propagator_config_path,
