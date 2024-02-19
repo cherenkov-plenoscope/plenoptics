@@ -127,9 +127,6 @@ def map_and_reduce_make_jobs(work_dir):
             )
 
             _jobs = merlict_development_kit_python.light_field_calibration.make_jobs(
-                merlict_map_path=config["merlict"]["executables"][
-                    "merlict_plenoscope_calibration_map_path"
-                ],
                 scenery_path=os.path.join(instrument_dir, "input", "scenery"),
                 map_dir=map_dir,
                 num_photons_per_block=config["statistics"][
@@ -163,9 +160,6 @@ def reduce_run_job(job):
     out_dir = os.path.join(instrument_dir, "light_field_geometry")
 
     rc = merlict_development_kit_python.light_field_calibration.reduce(
-        merlict_reduce_path=config["merlict"]["executables"][
-            "merlict_plenoscope_calibration_reduce_path"
-        ],
         map_dir=map_dir,
         out_dir=out_dir,
     )

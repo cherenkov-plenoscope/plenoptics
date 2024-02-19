@@ -1,25 +1,3 @@
-import os
-
-EXECUTABLES = {
-    "merlict_plenoscope_propagation_path": os.path.abspath(
-        os.path.join("build", "merlict", "merlict-plenoscope-propagation")
-    ),
-    "merlict_plenoscope_raw_photon_propagation_path": os.path.abspath(
-        os.path.join(
-            "build", "merlict", "merlict-plenoscope-raw-photon-propagation"
-        )
-    ),
-    "merlict_plenoscope_calibration_map_path": os.path.abspath(
-        os.path.join("build", "merlict", "merlict-plenoscope-calibration-map")
-    ),
-    "merlict_plenoscope_calibration_reduce_path": os.path.abspath(
-        os.path.join(
-            "build", "merlict", "merlict-plenoscope-calibration-reduce"
-        )
-    ),
-}
-
-
 PROPAGATION_CONFIG = {
     "night_sky_background_ligth": {
         "flux_vs_wavelength": [[250.0e-9, 1.0], [700.0e-9, 1.0]],

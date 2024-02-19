@@ -67,9 +67,6 @@ def make_response_to_star(
             corsika_run_path=star_light_path,
             output_path=run_path,
             light_field_geometry_path=light_field_geometry_path,
-            merlict_plenoscope_propagator_path=merlict_config["executables"][
-                "merlict_plenoscope_propagation_path"
-            ],
             merlict_plenoscope_propagator_config_path=merlict_plenoscope_propagator_config_path,
             random_seed=star_config["seed"],
             photon_origins=True,

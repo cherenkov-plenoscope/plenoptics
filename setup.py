@@ -40,7 +40,7 @@ setuptools.setup(
     install_requires=[
         "perlin_noise",
         "json_utils_sebastian-achim-mueller",
-        "merlict_development_kit_python_cherenkov-plenoscope-project",
+        "merlict_development_kit_python_cherenkov-plenoscope-project>=0.0.1",
     ],
     classifiers=[
         "Programming Language :: Python :: 3",

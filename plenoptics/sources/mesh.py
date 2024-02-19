@@ -55,9 +55,6 @@ def make_response_to_mesh(
         ) = phantom_source.merlict.make_plenopy_event_and_read_light_field_geometry(
             light_fields=light_fields,
             light_field_geometry_path=light_field_geometry_path,
-            merlict_propagate_photons_path=merlict_config["executables"][
-                "merlict_plenoscope_raw_photon_propagation_path"
-            ],
             merlict_propagate_config_path=merlict_plenoscope_propagator_config_path,
             random_seed=merlict_random_seed,
             work_dir=None,

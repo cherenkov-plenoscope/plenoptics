@@ -91,9 +91,6 @@ def write_merlict_config(cfg_dir):
     cfg_merl_dir = os.path.join(cfg_dir, "merlict")
     os.makedirs(cfg_merl_dir, exist_ok=True)
     json_utils.write(
-        os.path.join(cfg_merl_dir, "executables.json"), merlict.EXECUTABLES
-    )
-    json_utils.write(
         os.path.join(cfg_merl_dir, "merlict_propagation_config.json"),
         merlict.PROPAGATION_CONFIG,
     )
