@@ -41,6 +41,7 @@ setuptools.setup(
         "perlin_noise",
         "json_utils_sebastian-achim-mueller",
         "merlict_development_kit_python_cherenkov-plenoscope-project>=0.0.3",
+        "corsika_primary>=2.3.2",
     ],
     classifiers=[
         "Programming Language :: Python :: 3",

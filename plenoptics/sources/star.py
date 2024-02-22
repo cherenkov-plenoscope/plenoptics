@@ -124,8 +124,8 @@ def write_photon_bunches(
             size_written += block_size
 
             bunches = corsika_primary.calibration_light_source.draw_parallel_and_isochor_bunches(
-                cx=-1.0 * cx,
-                cy=-1.0 * cy,
+                cx=cx,
+                cy=cy,
                 aperture_radius=aperture_radius,
                 wavelength=433e-9,
                 size=block_size,
