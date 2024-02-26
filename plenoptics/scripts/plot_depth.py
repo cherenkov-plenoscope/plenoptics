@@ -7,6 +7,7 @@ import sebastians_matplotlib_addons as sebplt
 import binning_utils
 import plenoptics
 import confusion_matrix
+import thin_lens
 import plenopy
 import plenoirf
 import argparse
@@ -117,9 +118,13 @@ theory_depth_m = depth_bin["edges"]
 theory_depth_minus_m = []
 theory_depth_plus_m = []
 for g in theory_depth_m:
-    g_p, g_m = plenopy.thin_lens.resolution_of_depth(
-        object_distance_m=g,
-        **plenoscope,
+    g_p, g_m = thin_lens.resolution_of_depth(
+        object_distance=g,
+        focal_length=plenoscope["focal_length_m"],
+        aperture_diameter=plenoscope["mirror_diameter_m"],
+        diameter_of_pixel_projected_on_sensor_plane=plenoscope[
+            "diameter_of_pixel_projected_on_sensor_plane_m"
+        ],
     )
     theory_depth_minus_m.append(g_m)
     theory_depth_plus_m.append(g_p)
@@ -129,9 +134,13 @@ theory_depth_plus_m = np.array(theory_depth_plus_m)
 theory_depth_paxel_minus_m = []
 theory_depth_paxel_plus_m = []
 for g in theory_depth_m:
-    g_p, g_m = plenopy.thin_lens.resolution_of_depth(
-        object_distance_m=g,
-        **paxelscope,
+    g_p, g_m = thin_lens.resolution_of_depth(
+        object_distance=g,
+        focal_length=plenoscope["focal_length_m"],
+        aperture_diameter=plenoscope["mirror_diameter_m"],
+        diameter_of_pixel_projected_on_sensor_plane=plenoscope[
+            "diameter_of_pixel_projected_on_sensor_plane_m"
+        ],
     )
     theory_depth_paxel_minus_m.append(g_m)
     theory_depth_paxel_plus_m.append(g_p)
