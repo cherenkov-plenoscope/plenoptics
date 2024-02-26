@@ -318,6 +318,9 @@ def estimate_inverse_photon_density_pixel_per_photon(image, percentile):
 
     I = image.flatten()
     S = np.sum(I)
+    if S == 0:
+        return float("nan")
+
     a = np.flip(np.argsort(I))
     num_photons = 0.0
     fraction = 0.0
