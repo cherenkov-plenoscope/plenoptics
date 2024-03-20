@@ -12,6 +12,22 @@ import argparse
 import skimage
 from skimage import io
 
+
+def gzip_read_raw_sensor_response_into_time_lixel_repr(path):
+    raw = plenoptics.utils.gzip_read_raw_sensor_response(
+        phantom_source_light_field_path + ".gz"
+    )
+    loph = plenopy.photon_stream.loph.raw_sensor_response_to_photon_stream_in_loph_repr(
+        raw_sensor_response=raw
+    )
+    _photon_arrival_times_s = (
+        loph["sensor"]["time_slice_duration"]
+        * loph["photons"]["arrival_time_slices"]
+    )
+    _photon_lixel_ids = loph["photons"]["channels"]
+    return (_photon_arrival_times_s, _photon_lixel_ids)
+
+
 sebplt.matplotlib.rcParams.update(
     plenoirf.summary.figure.MATPLOTLIB_RCPARAMS_LATEX
 )
@@ -44,17 +60,12 @@ max_FoV_diameter_deg = np.rad2deg(
 phantom_source_light_field_path = os.path.join(
     work_dir, "responses", instrument_key, "phantom", "000000"
 )
-with open(phantom_source_light_field_path, "rb") as f:
-    _raw_sensor_response = plenopy.raw_light_field_sensor_response.read(f)
-    _loph_response = plenopy.photon_stream.loph.raw_sensor_response_to_photon_stream_in_loph_repr(
-        raw_sensor_response=_raw_sensor_response
+
+phantom_source_light_field = (
+    gzip_read_raw_sensor_response_into_time_lixel_repr(
+        phantom_source_light_field_path + ".gz"
     )
-    _photon_arrival_times_s = (
-        _loph_response["sensor"]["time_slice_duration"]
-        * _loph_response["photons"]["arrival_time_slices"]
-    )
-    _photon_lixel_ids = _loph_response["photons"]["channels"]
-    phantom_source_light_field = (_photon_arrival_times_s, _photon_lixel_ids)
+)
 
 phantom_source_mesh = config["observations"]["phantom"][
     "phantom_source_meshes_img"

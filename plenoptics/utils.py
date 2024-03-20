@@ -1,5 +1,8 @@
 import os
 import plenopy
+import gzip
+import json_utils
+import rename_after_writing as rnw
 
 
 def guess_scaling_of_num_photons_used_to_estimate_light_field_geometry(
@@ -34,3 +37,28 @@ def class_members_to_dict(c):
     for key in member_keys:
         out[key] = getattr(c, key)
     return out
+
+
+def gzip_read_raw_sensor_response(path):
+    with gzip.open(path, "rb") as f:
+        raw = plenopy.raw_light_field_sensor_response.read(f)
+    return raw
+
+
+def gzip_write_raw_sensor_response(path, raw_sensor_response):
+    with gzip.open(path + ".incomplete", "wb") as f:
+        plenopy.raw_light_field_sensor_response.write(
+            f=f, raw_sensor_response=raw_sensor_response
+        )
+    os.rename(path + ".incomplete", path)
+
+
+def json_write(path, o):
+    with rnw.open(path, "wt") as f:
+        f.write(json_utils.dumps(o))
+
+
+def json_read(path):
+    with open(path, "rt") as f:
+        o = json_utils.loads(f.read())
+    return o

@@ -107,7 +107,7 @@ def make_source_config_from_job(job):
     return source_config
 
 
-def analysis_run_job(job):
+def analysis_run_job(job, MAKE_DEBUG_PLOT=False):
     nkey = "{:06d}".format(job["number"])
 
     indir = os.path.join(
@@ -127,9 +127,8 @@ def analysis_run_job(job):
     os.makedirs(outdir, exist_ok=True)
 
     inpath = os.path.join(indir, nkey)
-    truth = json_utils.read(inpath + ".json")
-    with open(inpath, "rb") as f:
-        raw_sensor_response = plenopy.raw_light_field_sensor_response.read(f)
+    truth = utils.json_read(inpath + ".json")
+    raw_sensor_response = utils.gzip_read_raw_sensor_response(inpath + ".gz")
 
     (
         _,
@@ -183,13 +182,14 @@ def analysis_run_job(job):
     json_utils.write(outpath + ".incomplete", report)
     os.rename(outpath + ".incomplete", outpath)
 
-    try:
-        plot_report(
-            report=report,
-            path=outpath + ".jpg",
-        )
-    except:
-        pass
+    if MAKE_DEBUG_PLOT:
+        try:
+            plot_report(
+                report=report,
+                path=outpath + ".jpg",
+            )
+        except:
+            pass
 
 
 def make_image_binning(field_of_view_deg, num_pixel_on_edge):

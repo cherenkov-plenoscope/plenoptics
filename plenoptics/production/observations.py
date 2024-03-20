@@ -1,8 +1,10 @@
 import json_line_logger
 import os
+import gzip
 import json_utils
 import plenopy
 from .. import sources
+from .. import utils
 
 
 def run(work_dir, pool, logger=json_line_logger.LoggerStdout()):
@@ -158,17 +160,11 @@ def _observations_run_job(job):
 
     # export truth
     # ------------
-    outtruthpath = outpath + ".json"
-    json_utils.write(
-        outtruthpath + ".incomplete",
-        source_config,
-    )
-    os.rename(outtruthpath + ".incomplete", outtruthpath)
+    utils.json_write(path=outpath + ".json", o=source_config)
 
     # export raw sensor resposnse
     # ---------------------------
-    with open(outpath + ".incomplete", "wb") as f:
-        plenopy.raw_light_field_sensor_response.write(
-            f=f, raw_sensor_response=raw_sensor_response
-        )
-    os.rename(outpath + ".incomplete", outpath)
+    utils.gzip_write_raw_sensor_response(
+        path=outpath + ".gz",
+        raw_sensor_response=raw_sensor_response,
+    )
