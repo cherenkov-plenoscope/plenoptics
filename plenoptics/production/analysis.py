@@ -87,3 +87,6 @@ def reduce_analysis_jobs(mapdir, outpath):
 
     json_utils.write(outpath + ".incomplete", out, indent=None)
     os.rename(outpath + ".incomplete", outpath)
+
+    for path in paths:
+        os.remove(path)
