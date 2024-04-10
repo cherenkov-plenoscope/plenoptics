@@ -6,6 +6,7 @@ import json_line_logger
 import plenopy
 import shutil
 import merlict_development_kit_python
+import tarfile
 
 from .. import instruments
 from .. import merlict
@@ -182,9 +183,9 @@ def plot_make_jobs(work_dir):
     for instrument_key in config["instruments"]:
         instrument_dir = os.path.join(instruments_dir, instrument_key)
         lfg_dir = os.path.join(instrument_dir, "light_field_geometry")
-        plot_dir = os.path.join(lfg_dir, "plot")
+        plot_tar_path = os.path.join(lfg_dir, "plot.tar")
 
-        if not os.path.exists(plot_dir):
+        if not os.path.exists(plot_tar_path):
             job = {}
             job["work_dir"] = work_dir
             job["instrument_key"] = instrument_key
@@ -201,11 +202,21 @@ def plot_run_job(job):
         "light_field_geometry",
     )
     plot_dir = os.path.join(lfg_dir, "plot")
+    plot_tar_path = os.path.join(lfg_dir, "plot.tar")
     try:
+        # load
         lfg = plenopy.light_field_geometry.LightFieldGeometry(path=lfg_dir)
+
+        # make plots
         plenopy.plot.light_field_geometry.save_all(
             light_field_geometry=lfg,
             out_dir=plot_dir,
         )
+
+        # put plots into tar
+        with tarfile.open(plot_tar_path, "w") as tar:
+            tar.add(name=plot_dir, arcname="plot", recursive=True)
+        shutil.rmtree(plot_dir)
+
     except Exception as e:
         print(e)
