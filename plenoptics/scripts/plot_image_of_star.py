@@ -35,9 +35,7 @@ GRID_ANGLE_DEG = 0.1
 CMAPS = abe.plot.CMAPS
 
 point_source_report = json_utils.read(
-    os.path.join(
-        work_dir, "analysis", instrument_key, "star.json"
-    )
+    os.path.join(work_dir, "analysis", instrument_key, "star.json")
 )[star_key]
 
 if int(star_key) == 0:
