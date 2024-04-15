@@ -1,8 +1,12 @@
 import os
 import plenopy
+import io
 import gzip
 import json_utils
-import rename_after_writing as rnw
+import glob
+import re
+import rename_after_writing
+import zipfile
 
 
 def guess_scaling_of_num_photons_used_to_estimate_light_field_geometry(
@@ -54,7 +58,7 @@ def gzip_write_raw_sensor_response(path, raw_sensor_response):
 
 
 def json_write(path, o):
-    with rnw.open(path, "wt") as f:
+    with rename_after_writing.open(path, "wt") as f:
         f.write(json_utils.dumps(o))
 
 
@@ -62,3 +66,118 @@ def json_read(path):
     with open(path, "rt") as f:
         o = json_utils.loads(f.read())
     return o
+
+
+class ZipWriter:
+    def __init__(self, zipfile, name, mode="wt"):
+        self.mode = mode
+        self.name = name
+        self.zipfile = zipfile
+
+        assert self.mode in ["wt", "wb", "wt|gz", "wb|gz"]
+
+        if "t" in self.mode:
+            self.buff = io.StringIO()
+        elif "b" in self.mode:
+            self.buff = io.BytesIO()
+        else:
+            raise ValueError("Expected mode to contain either 'b' or 't'.")
+
+    def __enter__(self):
+        return self.buff
+
+    def __exit__(self, type, value, traceback):
+        self.buff.seek(0)
+
+        if "t" in self.mode:
+            payload_bytes = str.encode(self.buff.read())
+        elif "b" in self.mode:
+            payload_bytes = self.buff.read()
+        del self.buff
+
+        if "|gz" in self.mode:
+            payload_raw = gzip.compress(payload_bytes)
+            del payload_bytes
+        else:
+            payload_raw = payload_bytes
+
+        with self.zipfile.open(self.name, "w") as z:
+            z.write(payload_raw)
+
+    def __repr__(self):
+        return "{:s}(name='{:s}', mode='{:s}')".format(
+            self.__class__.__name__, self.name, self.mode
+        )
+
+
+class ZipReader:
+    def __init__(self, zipfile, name, mode="rt"):
+        self.mode = mode
+        self.name = name
+
+        assert self.mode in ["rt", "rb", "rt|gz", "rb|gz"]
+
+        with self.zipfile.open(self.name, "r") as z:
+            payload_raw = z.read()
+
+        if "|gz" in self.mode:
+            payload_bytes = gzip.decompress(payload_raw)
+            del payload_raw
+        else:
+            payload_bytes = payload_raw
+
+        if "t" in self.mode:
+            self.buff = io.StringIO()
+            self.buff.write(bytes.decode(payload_bytes))
+        elif "b" in self.mode:
+            self.buff = io.BytesIO()
+            self.buff.write(payload_bytes)
+        else:
+            raise ValueError("Expected mode to contain either 'b' or 't'.")
+
+        self.seek(0)
+
+    def __enter__(self):
+        return self.buff
+
+    def __exit__(self, type, value, traceback):
+        pass
+
+    def __repr__(self):
+        return "{:s}(name='{:s}', mode='{:s}')".format(
+            self.__class__.__name__, self.name, self.mode
+        )
+
+
+def zipfile_reduce(
+    map_dir,
+    out_path,
+    job_basenames=[],
+    job_ext=".job.zip",
+    remove_afer_reduce=True,
+):
+    pot_job_paths = sorted(glob.glob(os.path.join(map_dir, "*" + job_ext)))
+    job_paths = {}
+
+    for pot_job_path in pot_job_paths:
+        basename = os.path.basename(pot_job_path)
+        if re.findall(r"\d+" + job_ext, basename):
+            job_number_str = re.findall(r"\d+", basename)[0]
+            job_paths[job_number_str] = pot_job_path
+
+    with rename_after_writing.open(out_path, "wb") as file:
+        with zipfile.ZipFile(
+            file=file, mode="w", compression=zipfile.ZIP_STORED
+        ) as zout:
+            for job_number_str in job_paths:
+                with zipfile.ZipFile(job_paths[job_number_str], "r") as zin:
+                    for basename in job_basenames:
+                        with zin.open(basename, "r") as fin:
+                            with zout.open(
+                                os.path.join(job_number_str, basename), "w"
+                            ) as fout:
+                                fout.write(fin.read())
+
+    if remove_afer_reduce:
+        for job_number_str in job_paths:
+            os.remove(job_paths[job_number_str])
