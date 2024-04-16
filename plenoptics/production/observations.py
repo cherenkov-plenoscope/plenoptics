@@ -1,8 +1,6 @@
 import json_line_logger
 import os
 import zipfile
-import gzip
-import io
 import json_utils
 import plenopy
 import rename_after_writing
@@ -11,18 +9,39 @@ from .. import sources
 from .. import utils
 
 
-def run(work_dir, pool, logger=json_line_logger.LoggerStdout()):
+def run(work_dir, pool, logger=None):
+    logger = utils.LoggerStdout_if_None(logger=logger)
     config = json_utils.tree.read(os.path.join(work_dir, "config"))
 
     logger.info("Observations:Mapping: ...")
+    mapjobs = _make_mapping_jobs(
+        config=config, work_dir=work_dir, task_key="responses"
+    )
+    logger.info("Observations:Mapping: {:d} jobs to do".format(len(mapjobs)))
+    pool.map(_observations_run_mapjob, mapjobs)
+    logger.info("Observations:Mapping: done.")
 
+    logger.info("Observations:Reducing: ...")
+    reducejobs = _make_reducing_jobs(
+        config=config, work_dir=work_dir, task_key="responses"
+    )
+    logger.info(
+        "Observations:Reducing: {:d} jobs to do".format(len(reducejobs))
+    )
+    pool.map(_observations_run_reducejob, reducejobs)
+    logger.info("Observations:Reducing: done.")
+
+    logger.info("Observations: Complete.")
+
+
+def _make_mapping_jobs(config, work_dir, task_key):
     mapjobs = []
     for instrument_key in config["observations"]["instruments"]:
         for observation_key in config["observations"]["instruments"][
             instrument_key
         ]:
             base_path = os.path.join(
-                work_dir, "responses", instrument_key, observation_key
+                work_dir, task_key, instrument_key, observation_key
             )
 
             result_path = base_path + ".zip"
@@ -54,44 +73,32 @@ def run(work_dir, pool, logger=json_line_logger.LoggerStdout()):
                         "number": job_number,
                     }
                     jobs.append(job)
-            logger.info(
-                "Observations:Mapping: Appending {:d} {:s}/{:s} jobs.".format(
-                    len(jobs), instrument_key, observation_key
-                )
-            )
             mapjobs += jobs
+    return mapjobs
 
-    logger.info("Observations:Mapping: {:d} jobs to do".format(len(mapjobs)))
-    pool.map(_observations_run_mapjob, mapjobs)
-    logger.info("Observations:Mapping: done.")
 
+def _make_reducing_jobs(config, work_dir, task_key):
     reducejobs = []
-    logger.info("Observations:Reducing: ...")
 
     for instrument_key in config["observations"]["instruments"]:
         for observation_key in config["observations"]["instruments"][
             instrument_key
         ]:
             base_path = os.path.join(
-                work_dir, "responses", instrument_key, observation_key
+                work_dir, task_key, instrument_key, observation_key
             )
 
             result_path = base_path + ".zip"
-            if not os.path.exists(result_path):
+            map_dir = base_path + ".map"
+
+            if os.path.exists(map_dir) and not os.path.exists(result_path):
                 job = {
                     "work_dir": work_dir,
                     "instrument_key": instrument_key,
                     "observation_key": observation_key,
                 }
                 reducejobs.append(job)
-
-    logger.info(
-        "Observations:Reducing: {:d} jobs to do".format(len(reducejobs))
-    )
-    pool.map(_observations_run_reducejob, reducejobs)
-    logger.info("Observations:Reducing: done.")
-
-    logger.info("Observations: Complete.")
+    return reducejobs
 
 
 def _observations_run_mapjob(job):
@@ -190,7 +197,7 @@ def _observations_run_reducejob(job):
             "raw_sensor_response.phs.gz",
         ],
         job_ext=".job.zip",
-        remove_afer_reduce=True,
+        remove_after_reduce=True,
     )
 
     if os.path.exists(base_path + ".zip"):

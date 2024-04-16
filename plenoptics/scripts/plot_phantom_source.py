@@ -14,9 +14,10 @@ from skimage import io
 
 
 def gzip_read_raw_sensor_response_into_time_lixel_repr(path):
-    raw = plenoptics.utils.gzip_read_raw_sensor_response(
-        phantom_source_light_field_path + ".gz"
+    out = plenoptics.utils.zipfile_responses_read(
+        file=path, job_number_keys=["000000"]
     )
+    raw = out["000000"]["raw_sensor_response"]
     loph = plenopy.photon_stream.loph.raw_sensor_response_to_photon_stream_in_loph_repr(
         raw_sensor_response=raw
     )
@@ -58,12 +59,12 @@ max_FoV_diameter_deg = np.rad2deg(
 )
 
 phantom_source_light_field_path = os.path.join(
-    work_dir, "responses", instrument_key, "phantom", "000000"
+    work_dir, "responses", instrument_key, "phantom.zip"
 )
 
 phantom_source_light_field = (
     gzip_read_raw_sensor_response_into_time_lixel_repr(
-        phantom_source_light_field_path + ".gz"
+        phantom_source_light_field_path
     )
 )
 

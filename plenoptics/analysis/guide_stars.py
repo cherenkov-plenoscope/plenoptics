@@ -2,6 +2,7 @@ import numpy as np
 import json_utils
 import os
 from . import point_source_report
+from .. import utils
 
 
 def list_instruments_observing_guide_stars(config):
@@ -39,14 +40,13 @@ def table_vmax(work_dir):
     for instrument_key in list_instruments_observing_guide_stars(config):
         out[instrument_key] = {}
 
-        reports = json_utils.read(
-            os.path.join(
-                work_dir,
-                "analysis",
-                instrument_key,
-                "star.json",
-            )
+        reports_zip_path = os.path.join(
+            work_dir,
+            "analysis",
+            instrument_key,
+            "star.zip",
         )
+        reports = utils.zipfile_json_read_to_dict(reports_zip_path)
 
         for guide_star_key in list_guide_star_keys(config):
             img = point_source_report.make_norm_image(

@@ -2,7 +2,7 @@
 import os
 import plenoirf
 import numpy as np
-import plenoptics as abe
+import plenoptics
 import json_utils
 import sebastians_matplotlib_addons as sebplt
 import argparse
@@ -32,11 +32,12 @@ config = json_utils.tree.read(os.path.join(work_dir, "config"))
 instrument_sensor_key = config["instruments"][instrument_key]["sensor"]
 
 GRID_ANGLE_DEG = 0.1
-CMAPS = abe.plot.CMAPS
+CMAPS = plenoptics.plot.CMAPS
 
-point_source_report = json_utils.read(
-    os.path.join(work_dir, "analysis", instrument_key, "star.json")
+point_source_report = plenoptics.utils.zipfile_json_read_to_dict(
+    os.path.join(work_dir, "analysis", instrument_key, "star.zip")
 )[star_key]
+
 
 if int(star_key) == 0:
     hasy = True
@@ -64,7 +65,7 @@ for cmap_key in CMAPS:
     (
         bin_edges_cx,
         bin_edges_cy,
-    ) = abe.analysis.image.binning_image_bin_edges(
+    ) = plenoptics.analysis.image.binning_image_bin_edges(
         binning=point_source_report["image"]["binning"]
     )
     bin_edges_cx_deg = np.rad2deg(bin_edges_cx)
@@ -72,7 +73,7 @@ for cmap_key in CMAPS:
     (
         ticks_cx_deg,
         ticks_cy_deg,
-    ) = abe.plot.make_explicit_cx_cy_ticks(
+    ) = plenoptics.plot.make_explicit_cx_cy_ticks(
         image_response=point_source_report, tick_angle=GRID_ANGLE_DEG
     )
 
@@ -84,8 +85,10 @@ for cmap_key in CMAPS:
     )
     ax_psf.set_aspect("equal")
 
-    image_response_norm = abe.analysis.point_source_report.make_norm_image(
-        point_source_report=point_source_report
+    image_response_norm = (
+        plenoptics.analysis.point_source_report.make_norm_image(
+            point_source_report=point_source_report
+        )
     )
 
     cmap_psf = ax_psf.pcolormesh(
@@ -131,14 +134,14 @@ for cmap_key in CMAPS:
         alpha=0.5,
         num_steps=360 * 5,
     )
-    abe.plot.ax_psf_set_ticks(
+    plenoptics.plot.ax_psf_set_ticks(
         ax=ax_psf,
         image_response=point_source_report,
         grid_angle_deg=GRID_ANGLE_DEG,
         x=True,
         y=True,
     )
-    abe.plot.ax_psf_add_eye(
+    plenoptics.plot.ax_psf_add_eye(
         ax=ax_psf,
         image_response=point_source_report,
         bin_edges_cx_deg=bin_edges_cx_deg,

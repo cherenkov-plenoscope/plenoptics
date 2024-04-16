@@ -13,7 +13,8 @@ from .. import merlict
 from .. import utils
 
 
-def run(work_dir, pool, logger=json_line_logger.LoggerStdout()):
+def run(work_dir, pool, logger=None):
+    logger = utils.LoggerStdout_if_None(logger=logger)
     logger.info("lfg: Start")
     logger.info("lfg: Make sceneries")
     sjobs = make_sceneries_make_jobs(work_dir=work_dir)

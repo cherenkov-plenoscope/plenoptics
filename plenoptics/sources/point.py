@@ -107,6 +107,56 @@ def make_source_config_from_job(job):
     return source_config
 
 
+def analyse(
+    work_dir,
+    light_field_geometry,
+    source_config,
+    raw_sensor_response,
+    random_seed,
+):
+    (
+        _,
+        beam_ids,
+    ) = plenopy.light_field_sequence.photon_arrival_times_and_lixel_ids(
+        raw_sensor_response=raw_sensor_response
+    )
+
+    participating_beams = make_participating_beams_from_lixel_ids(
+        beam_ids=beam_ids
+    )
+
+    prng = np.random.Generator(np.random.PCG64(random_seed))
+
+    cfg_analysis = json_utils.read(
+        os.path.join(work_dir, "config", "analysis", "point.json")
+    )
+
+    image_binning = make_image_binning(
+        field_of_view_deg=cfg_analysis["field_of_view_deg"],
+        num_pixel_on_edge=cfg_analysis["num_pixel_on_edge"],
+    )
+
+    report = estimate_focus(
+        light_field_geometry=light_field_geometry,
+        participating_beams=participating_beams,
+        prng=prng,
+        image_binning=image_binning,
+        max_object_distance_m=1.25 * cfg_analysis["max_object_distance_m"],
+        min_object_distance_m=0.75 * cfg_analysis["min_object_distance_m"],
+        image_containment_percentile=cfg_analysis[
+            "image_containment_percentile"
+        ],
+        oversampling_beam_spread=cfg_analysis["oversampling_beam_spread"],
+    )
+
+    report["cx_deg"] = source_config["cx_deg"]
+    report["cy_deg"] = source_config["cy_deg"]
+    report["object_distance_m"] = source_config["object_distance_m"]
+
+    return report
+
+
+"""
 def analysis_run_job(job, MAKE_DEBUG_PLOT=False):
     nkey = "{:06d}".format(job["number"])
 
@@ -127,7 +177,7 @@ def analysis_run_job(job, MAKE_DEBUG_PLOT=False):
     os.makedirs(outdir, exist_ok=True)
 
     inpath = os.path.join(indir, nkey)
-    truth = utils.json_read(inpath + ".json")
+    source_config = utils.json_read(inpath + ".json")
     raw_sensor_response = utils.gzip_read_raw_sensor_response(inpath + ".gz")
 
     (
@@ -174,9 +224,9 @@ def analysis_run_job(job, MAKE_DEBUG_PLOT=False):
         oversampling_beam_spread=cfg_analysis["oversampling_beam_spread"],
     )
 
-    report["cx_deg"] = truth["cx_deg"]
-    report["cy_deg"] = truth["cy_deg"]
-    report["object_distance_m"] = truth["object_distance_m"]
+    report["cx_deg"] = source_config["cx_deg"]
+    report["cy_deg"] = source_config["cy_deg"]
+    report["object_distance_m"] = source_config["object_distance_m"]
 
     outpath = os.path.join(outdir, nkey + ".json")
     json_utils.write(outpath + ".incomplete", report)
@@ -190,6 +240,7 @@ def analysis_run_job(job, MAKE_DEBUG_PLOT=False):
             )
         except:
             pass
+"""
 
 
 def make_image_binning(field_of_view_deg, num_pixel_on_edge):

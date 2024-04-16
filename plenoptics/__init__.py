@@ -19,7 +19,8 @@ def init(work_dir, random_seed=42, minimal=False):
     default_config.write_default_config(cfg_dir=cfg_dir, minimal=minimal)
 
 
-def run(work_dir, pool, logger=json_line_logger.LoggerStdout()):
+def run(work_dir, pool, logger=None):
+    logger = utils.LoggerStdout_if_None(logger=logger)
     logger.info("Start")
 
     logger.info("Make light-field-geometryies")
@@ -203,7 +204,8 @@ def _run_script(script, argv):
     return subprocess.call(args)
 
 
-def plot_guide_stars(work_dir, pool, logger):
+def plot_guide_stars(work_dir, pool, logger=None):
+    logger = utils.LoggerStdout_if_None(logger=logger)
     guide_stars_dir = os.path.join(work_dir, "plots", "guide_stars")
 
     _run_script(

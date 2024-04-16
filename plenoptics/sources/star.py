@@ -180,6 +180,34 @@ def make_source_config_from_job(job):
     return source_config
 
 
+def analyse(
+    work_dir,
+    light_field_geometry,
+    source_config,
+    raw_sensor_response,
+    random_seed,
+):
+    prng = np.random.Generator(np.random.PCG64(random_seed))
+
+    cfg_analysis = json_utils.read(
+        os.path.join(work_dir, "config", "analysis", "star.json")
+    )
+
+    result = analysis.point_source_report.make_point_source_report(
+        image_center_cx_deg=source_config["cx_deg"],
+        image_center_cy_deg=source_config["cy_deg"],
+        raw_sensor_response=raw_sensor_response,
+        light_field_geometry=light_field_geometry,
+        object_distance_m=cfg_analysis["object_distance_m"],
+        containment_percentile=cfg_analysis["containment_percentile"],
+        binning=cfg_analysis["binning"],
+        prng=prng,
+    )
+
+    return result
+
+
+"""
 def analysis_run_job(job):
     nkey = "{:06d}".format(job["number"])
 
@@ -201,7 +229,7 @@ def analysis_run_job(job):
 
     inpath = os.path.join(indir, nkey)
 
-    truth = utils.json_read(inpath + ".json")
+    source_config = utils.json_read(inpath + ".json")
     raw_sensor_response = utils.gzip_read_raw_sensor_response(inpath + ".gz")
 
     prng = np.random.Generator(np.random.PCG64(job["number"]))
@@ -220,8 +248,8 @@ def analysis_run_job(job):
     )
 
     result = analysis.point_source_report.make_point_source_report(
-        image_center_cx_deg=truth["cx_deg"],
-        image_center_cy_deg=truth["cy_deg"],
+        image_center_cx_deg=source_config["cx_deg"],
+        image_center_cy_deg=source_config["cy_deg"],
         raw_sensor_response=raw_sensor_response,
         light_field_geometry=light_field_geometry,
         object_distance_m=cfg_analysis["object_distance_m"],
@@ -233,3 +261,4 @@ def analysis_run_job(job):
     outpath = os.path.join(outdir, nkey + ".json")
     json_utils.write(outpath + ".incomplete", result)
     os.rename(outpath + ".incomplete", outpath)
+"""

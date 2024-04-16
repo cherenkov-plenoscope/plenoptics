@@ -8,6 +8,7 @@ import binning_utils
 import confusion_matrix
 import plenopy
 import plenoirf
+import plenoptics
 import argparse
 
 sebplt.matplotlib.rcParams.update(
@@ -28,8 +29,8 @@ instrument_key = args.instrument_key
 os.makedirs(out_dir, exist_ok=True)
 
 config = json_utils.tree.read(os.path.join(work_dir, "config"))
-_point_reports = json_utils.read(
-    os.path.join(work_dir, "analysis", instrument_key, "point.json")
+_point_reports = plenoptics.utils.zipfile_json_read_to_dict(
+    os.path.join(work_dir, "analysis", instrument_key, "point.zip")
 )
 
 pixel_pitch_deg = (

@@ -30,8 +30,8 @@ instrument_key = args.instrument_key
 os.makedirs(out_dir, exist_ok=True)
 
 config = json_utils.tree.read(os.path.join(work_dir, "config"))
-result = json_utils.read(
-    os.path.join(work_dir, "analysis", instrument_key, "point.json")
+result = plenoptics.utils.zipfile_json_read_to_dict(
+    os.path.join(work_dir, "analysis", instrument_key, "point.zip")
 )
 
 # properties of plenoscope

@@ -6,7 +6,16 @@ import json_utils
 import glob
 import re
 import rename_after_writing
+import json_line_logger
 import zipfile
+import posixpath
+
+
+def LoggerStdout_if_None(logger):
+    if logger is None:
+        return json_line_logger.LoggerStdout()
+    else:
+        return logger
 
 
 def guess_scaling_of_num_photons_used_to_estimate_light_field_geometry(
@@ -117,7 +126,7 @@ class ZipReader:
 
         assert self.mode in ["rt", "rb", "rt|gz", "rb|gz"]
 
-        with self.zipfile.open(self.name, "r") as z:
+        with zipfile.open(self.name, "r") as z:
             payload_raw = z.read()
 
         if "|gz" in self.mode:
@@ -135,7 +144,7 @@ class ZipReader:
         else:
             raise ValueError("Expected mode to contain either 'b' or 't'.")
 
-        self.seek(0)
+        self.buff.seek(0)
 
     def __enter__(self):
         return self.buff
@@ -154,7 +163,7 @@ def zipfile_reduce(
     out_path,
     job_basenames=[],
     job_ext=".job.zip",
-    remove_afer_reduce=True,
+    remove_after_reduce=True,
 ):
     pot_job_paths = sorted(glob.glob(os.path.join(map_dir, "*" + job_ext)))
     job_paths = {}
@@ -178,6 +187,43 @@ def zipfile_reduce(
                             ) as fout:
                                 fout.write(fin.read())
 
-    if remove_afer_reduce:
+    if remove_after_reduce:
         for job_number_str in job_paths:
             os.remove(job_paths[job_number_str])
+
+
+def zipfile_json_read_to_dict(file):
+    out = {}
+    with zipfile.ZipFile(file=file, mode="r") as zin:
+        infos = zin.infolist()
+        for info in infos:
+            key = posixpath.dirname(info.filename)
+            if str.endswith(info.filename, ".json.gz"):
+                item_mode = "rt|gz"
+            elif str.endswith(info.filename, ".json"):
+                item_mode = "rt"
+            else:
+                continue
+            with ZipReader(
+                zipfile=zin, name=info.filename, mode=item_mode
+            ) as f:
+                out[key] = json_utils.loads(f.read())
+    return out
+
+
+def zipfile_responses_read(file, job_number_keys=[]):
+    out = {}
+    with zipfile.ZipFile(file=file, mode="r") as zin:
+        for job_number_key in job_number_keys:
+            out[job_number_key] = {}
+            name = posixpath.join(job_number_key, "source_config.json")
+            with ZipReader(zipfile=zin, name=name, mode="rt") as f:
+                out[job_number_key]["source_config"] = json_utils.loads(
+                    f.read()
+                )
+            name = posixpath.join(job_number_key, "raw_sensor_response.phs.gz")
+            with ZipReader(zipfile=zin, name=name, mode="rb|gz") as f:
+                out[job_number_key][
+                    "raw_sensor_response"
+                ] = plenopy.raw_light_field_sensor_response.read(f=f)
+    return out

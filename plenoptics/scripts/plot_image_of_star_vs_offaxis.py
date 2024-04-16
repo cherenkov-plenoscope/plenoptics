@@ -56,8 +56,8 @@ for instrument_key in INSTRUMENTS:
         [max_instrument_fov_half_angle_deg, instrument_fov_half_angle_deg]
     )
 
-    image_responses = json_utils.read(
-        os.path.join(work_dir, "analysis", instrument_key, "star.json")
+    image_responses = plenoptics.utils.zipfile_json_read_to_dict(
+        os.path.join(work_dir, "analysis", instrument_key, "star.zip")
     )
 
     ll = []
