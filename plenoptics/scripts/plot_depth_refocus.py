@@ -167,6 +167,7 @@ for n, point_key in enumerate(ooo):
     if n == 0:
         axn.set_xlabel(XLABEL)
     else:
+        axn.set_xticks(axn.get_xticks())  # to get rid of UserWarning
         axn.set_xticklabels([""] * len(axn.get_xticklabels()))
 
     axn.set_yticks(my_yticks)

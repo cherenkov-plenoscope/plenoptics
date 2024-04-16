@@ -268,6 +268,8 @@ for PLOT in PLOTS:
         else:
             xtl = r""
         xticklabels.append(xtl)
+
+    ax_usr.set_xticks(ax_usr.get_xticks())  # to get rid of UserWarning
     ax_usr.set_xticklabels(xticklabels)
 
     ax_usr.set_xlabel(
