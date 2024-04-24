@@ -47,15 +47,8 @@ def run(work_dir, pool, logger=None):
     logger.info("Plot guide stars")
     plot_guide_stars(work_dir=work_dir, pool=pool, logger=logger)
 
-    _run_script(
-        script="plot_image_of_star_vs_offaxis",
-        argv=[
-            "--work_dir",
-            work_dir,
-            "--out_dir",
-            os.path.join(work_dir, "plots", "guide_stars_vs_offaxis"),
-        ],
-    )
+    logger.info("Plot guide stars vs. offaxis")
+    plot_guide_stars_vs_offaxis(work_dir=work_dir, logger=logger)
 
     logger.info("Plot depth")
     pjobs = _plot_depth_make_jobs(work_dir=work_dir)
@@ -208,35 +201,53 @@ def plot_guide_stars(work_dir, pool, logger=None):
     logger = utils.LoggerStdout_if_None(logger=logger)
     guide_stars_dir = os.path.join(work_dir, "plots", "guide_stars")
 
-    _run_script(
-        script="plot_image_of_star_cmap",
-        argv=["--work_dir", work_dir, "--out_dir", guide_stars_dir],
-    )
+    if not os.path.exists(guide_stars_dir):
+        logger.debug("run script 'plot_image_of_star_cmap'")
+        _run_script(
+            script="plot_image_of_star_cmap",
+            argv=["--work_dir", work_dir, "--out_dir", guide_stars_dir],
+        )
 
-    table_vmax = analysis.guide_stars.table_vmax(work_dir=work_dir)
-    vmax = analysis.guide_stars.table_vmax_max(table_vmax=table_vmax)
+        table_vmax = analysis.guide_stars.table_vmax(work_dir=work_dir)
+        vmax = analysis.guide_stars.table_vmax_max(table_vmax=table_vmax)
 
-    jobs = []
-    for instrument_key in table_vmax:
-        out_dir = os.path.join(guide_stars_dir, instrument_key)
-        if not os.path.exists(out_dir):
-            for star_key in table_vmax[instrument_key]:
-                job = {"script": "plot_image_of_star"}
-                job["argv"] = [
-                    "--work_dir",
-                    work_dir,
-                    "--out_dir",
-                    out_dir,
-                    "--instrument_key",
-                    instrument_key,
-                    "--star_key",
-                    star_key,
-                    "--vmax",
-                    "{:e}".format(vmax),
-                ]
-                jobs.append(job)
+        jobs = []
+        for instrument_key in table_vmax:
+            out_dir = os.path.join(guide_stars_dir, instrument_key)
+            if not os.path.exists(out_dir):
+                logger.debug("missing '{:s}'".format(out_dir))
+                for star_key in table_vmax[instrument_key]:
+                    job = {"script": "plot_image_of_star"}
+                    job["argv"] = [
+                        "--work_dir",
+                        work_dir,
+                        "--out_dir",
+                        out_dir,
+                        "--instrument_key",
+                        instrument_key,
+                        "--star_key",
+                        star_key,
+                        "--vmax",
+                        "{:e}".format(vmax),
+                    ]
+                    jobs.append(job)
 
-    pool.map(_run_script_job, jobs)
+        pool.map(_run_script_job, jobs)
+
+
+def plot_guide_stars_vs_offaxis(work_dir, logger):
+    out_dir = os.path.join(work_dir, "plots", "guide_stars_vs_offaxis")
+    if not os.path.exists(out_dir):
+        logger.info("Plot guide stars vs. offaxis")
+        _run_script(
+            script="plot_image_of_star_vs_offaxis",
+            argv=[
+                "--work_dir",
+                work_dir,
+                "--out_dir",
+                out_dir,
+            ],
+        )
 
 
 def mv_observation(work_dir, observation_key="phantom", postfix=".old"):
