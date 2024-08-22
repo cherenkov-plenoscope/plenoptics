@@ -1,23 +1,26 @@
 #!/usr/bin/python
 import argparse
 import numpy as np
-import plenoirf
+import plenoptics
 import os
 import plenopy
 import sebastians_matplotlib_addons as sebplt
 
-sebplt.matplotlib.rcParams.update(
-    plenoirf.summary.figure.MATPLOTLIB_RCPARAMS_LATEX
-)
-
 argparser = argparse.ArgumentParser()
 argparser.add_argument("--light_field_geometry_path", type=str)
 argparser.add_argument("--out_dir", type=str)
+argparser.add_argument("--dark", action="store_true")
 
 args = argparser.parse_args()
 
+colormode = "dark" if args.dark else "default"
 light_field_geometry_path = args.light_field_geometry_path
 out_dir = args.out_dir
+
+PLT = plenoptics.utils.init_plot_config()
+CM = PLT["colormodes"][colormode]
+sebplt.matplotlib.rcParams.update(PLT["matplotlib_rcparams"]["latex"])
+sebplt.plt.style.use(CM["style"])
 
 os.makedirs(out_dir, exist_ok=True)
 
@@ -95,7 +98,7 @@ def save_histogram(
         linestyle=None,
         linecolor=None,
         linealpha=0.0,
-        face_color="k",
+        face_color=CM["k"],
         face_alpha=0.25,
         label=None,
         draw_bin_walls=False,
@@ -106,7 +109,7 @@ def save_histogram(
         bin_edges=v_bin_edges * xscale,
         bincounts=v_bin_counts * yscale,
         linestyle="-",
-        linecolor="k",
+        linecolor=CM["k"],
         linealpha=1.0,
         draw_bin_walls=True,
     )
@@ -188,7 +191,7 @@ for met in RANGES:
 
     for key in hists:
         save_histogram(
-            path=os.path.join(out_dir, key + "_log_{:s}.jpg".format(met)),
+            path=os.path.join(out_dir, key + f"_log_{met:s}.jpg"),
             ylim=rrr[met]["ylim_log"],
             semilogy=True,
             v_bin_edges=hists[key][met]["v_bin_edges"],
@@ -200,7 +203,7 @@ for met in RANGES:
             ylabel=r"intensity$\,/\,$1",
         )
         save_histogram(
-            path=os.path.join(out_dir, key + "_lin_{:s}.jpg".format(met)),
+            path=os.path.join(out_dir, key + f"_lin_{met:s}.jpg"),
             ylim=rrr[met]["ylim_lin"],
             semilogy=False,
             v_bin_edges=hists[key][met]["v_bin_edges"],

@@ -12,20 +12,23 @@ import plenopy
 import plenoirf
 import argparse
 
-sebplt.matplotlib.rcParams.update(
-    plenoirf.summary.figure.MATPLOTLIB_RCPARAMS_LATEX
-)
-
 argparser = argparse.ArgumentParser()
 argparser.add_argument("--work_dir", type=str)
 argparser.add_argument("--out_dir", type=str)
 argparser.add_argument("--instrument_key", type=str)
+argparser.add_argument("--dark", action="store_true")
 
 args = argparser.parse_args()
 
+colormode = "dark" if args.dark else "default"
 work_dir = args.work_dir
 out_dir = args.out_dir
 instrument_key = args.instrument_key
+
+PLT = plenoptics.utils.init_plot_config()
+CM = PLT["colormodes"][colormode]
+sebplt.matplotlib.rcParams.update(PLT["matplotlib_rcparams"]["latex"])
+sebplt.plt.style.use(CM["style"])
 
 os.makedirs(out_dir, exist_ok=True)
 
@@ -164,13 +167,13 @@ ax_h.set_xlim(
 )
 ax_h.set_xlabel(r"true depth$\,/\,$km")
 ax_h.set_ylabel("statistics")
-ax_h.axhline(cm["min_exposure_ax0"], linestyle=":", color="k")
+ax_h.axhline(cm["min_exposure_ax0"], linestyle=":", color=CM["k"])
 sebplt.ax_add_histogram(
     ax=ax_h,
     bin_edges=cm["ax0_bin_edges"] * SCALE,
     bincounts=cm["exposure_ax0"],
     linestyle="-",
-    linecolor="k",
+    linecolor=CM["k"],
 )
 ax_h.set_xticks(xticks)
 ax_h.set_xticklabels(xlabels)
@@ -187,18 +190,21 @@ ax_c = sebplt.add_axes(fig=fig, span=[0.05, 0.14, 0.85, 0.85])
 ax_cb = sebplt.add_axes(fig=fig, span=[0.9, 0.14, 0.02, 0.85])
 
 ax_c.plot(
-    theory_depth_m * SCALE, theory_depth_m * SCALE, "k--", linewidth=linewidth
+    theory_depth_m * SCALE,
+    theory_depth_m * SCALE,
+    f'{CM["k"]}--',
+    linewidth=linewidth,
 )
 ax_c.plot(
     theory_depth_m * SCALE,
     theory_depth_minus_m * SCALE,
-    "k:",
+    f'{CM["k"]}:',
     linewidth=linewidth,
 )
 ax_c.plot(
     theory_depth_m * SCALE,
     theory_depth_plus_m * SCALE,
-    "k:",
+    f'{CM["k"]}:',
     linewidth=linewidth,
 )
 
@@ -206,7 +212,7 @@ _pcm_confusion = ax_c.pcolormesh(
     cm["ax0_bin_edges"] * SCALE,
     cm["ax1_bin_edges"] * SCALE,
     np.transpose(cm["counts_normalized_on_ax0"]) * np.mean(cm["counts_ax0"]),
-    cmap="Greys",
+    cmap=CM["Greys"],
     norm=sebplt.plt_colors.PowerNorm(gamma=0.5),
 )
 sebplt.ax_add_grid(ax=ax_c, add_minor=True)
@@ -253,18 +259,21 @@ ax_cb = sebplt.add_axes(
     fig=fig, span=plenoirf.summary.figure.AX_SPAN_WITH_COLORBAR_COLORBAR
 )
 ax_c.plot(
-    theory_depth_m, theory_depth_m / theory_depth_m, "k--", linewidth=linewidth
+    theory_depth_m,
+    theory_depth_m / theory_depth_m,
+    f'{CM["k"]}--',
+    linewidth=linewidth,
 )
 ax_c.plot(
     theory_depth_m * SCALE,
     theory_depth_minus_m / theory_depth_m,
-    "k:",
+    f'{CM["k"]}:',
     linewidth=linewidth,
 )
 ax_c.plot(
     theory_depth_m * SCALE,
     theory_depth_plus_m / theory_depth_m,
-    "k:",
+    f'{CM["k"]}:',
     linewidth=linewidth,
 )
 
@@ -272,7 +281,7 @@ _pcm_confusion = ax_c.pcolormesh(
     cm["ax0_bin_edges"] * SCALE,
     cm["ax1_bin_edges"],
     np.transpose(cm["counts_normalized_on_ax0"]) * np.mean(cm["counts_ax0"]),
-    cmap="Greys",
+    cmap=CM["Greys"],
     norm=sebplt.plt_colors.PowerNorm(gamma=0.5),
 )
 sebplt.ax_add_grid(ax=ax_c, add_minor=True)
@@ -335,14 +344,14 @@ ax_h.set_ylabel(r"resolution$\,/\,$m")
 ax_h.plot(
     theory_depth_m * SCALE,
     (theory_depth_plus_m - theory_depth_minus_m),
-    "k:",
+    f'{CM["k"]}:',
     alpha=0.3,
     linewidth=linewidth,
 )
 ax_h.plot(
     theory_depth_m * SCALE,
     (theory_depth_plus_m - theory_depth_minus_m) * G_PLUS_G_MINUS_SCALE,
-    "k--",
+    f'{CM["k"]}--',
     linewidth=linewidth,
 )
 sebplt.ax_add_histogram(
@@ -352,8 +361,8 @@ sebplt.ax_add_histogram(
     bincounts_lower=deltas_std - deltas_std_au,
     bincounts_upper=deltas_std + deltas_std_au,
     linestyle="-",
-    linecolor="k",
-    face_color="k",
+    linecolor=CM["k"],
+    face_color=CM["k"],
     face_alpha=0.4,
 )
 
