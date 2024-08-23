@@ -9,17 +9,21 @@ import sebastians_matplotlib_addons as sebplt
 import argparse
 import pandas
 
-sebplt.matplotlib.rcParams.update(acr_plot.config()["rcParams"])
-
 argparser = argparse.ArgumentParser()
 argparser.add_argument("--work_dir", type=str)
 argparser.add_argument("--out_dir", type=str)
-
+argparser.add_argument("--colormode", default="default")
 
 args = argparser.parse_args()
 
 work_dir = args.work_dir
 out_dir = args.out_dir
+colormode = args.colormode
+
+PLT = plenoptics.plot.config()
+CM = PLT["colormodes"][colormode]
+sebplt.matplotlib.rcParams.update(PLT["matplotlib_rcparams"]["latex"])
+sebplt.plt.style.use(CM["style"])
 
 os.makedirs(out_dir, exist_ok=True)
 
@@ -248,12 +252,12 @@ for PLOT in PLOTS:
             bin_edges=oa_bin_edges_deg**2,
             bincounts=sa_usr,
             linestyle=linestyle,
-            linecolor="k",
+            linecolor=CM["k"],
             linealpha=1.0,
             bincounts_upper=sa_upper_usr,
             bincounts_lower=sa_lower_usr,
-            face_color="k",
-            face_alpha=0.1,
+            face_color=CM["k"],
+            face_alpha=0.3,
             label=label,
             draw_bin_walls=True,
         )

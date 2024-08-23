@@ -11,20 +11,23 @@ import plenoirf
 import plenoptics
 import argparse
 
-sebplt.matplotlib.rcParams.update(
-    plenoirf.summary.figure.MATPLOTLIB_RCPARAMS_LATEX
-)
-
 argparser = argparse.ArgumentParser()
 argparser.add_argument("--work_dir", type=str)
 argparser.add_argument("--out_dir", type=str)
 argparser.add_argument("--instrument_key", type=str)
+argparser.add_argument("--colormode", default="default")
 
 args = argparser.parse_args()
 
+colormode = args.colormode
 work_dir = args.work_dir
 out_dir = args.out_dir
 instrument_key = args.instrument_key
+
+PLT = plenoptics.plot.config()
+CM = PLT["colormodes"][colormode]
+sebplt.matplotlib.rcParams.update(PLT["matplotlib_rcparams"]["latex"])
+sebplt.plt.style.use(CM["style"])
 
 os.makedirs(out_dir, exist_ok=True)
 
@@ -153,12 +156,18 @@ for n, point_key in enumerate(ooo):
         ],
     )
     sebplt.ax_add_grid(ax=axn, add_minor=True)
-    axn.plot(uuu["depth_m"], uuu["spread_usr"], "ko", alpha=0.33, markersize=2)
-    axn.plot(uuu["depth_m"], uuu["spread_usr"], "k-", linewidth=1)
+    axn.plot(
+        uuu["depth_m"],
+        uuu["spread_usr"],
+        CM["k"] + "o",
+        alpha=0.33,
+        markersize=2,
+    )
+    axn.plot(uuu["depth_m"], uuu["spread_usr"], CM["k"] + "-", linewidth=1)
     axn.plot(
         [uuu["true_depth_m"], uuu["true_depth_m"]],
         [ymin, ymax],
-        "k--",
+        CM["k"] + "--",
         linewidth=1,
         alpha=0.5,
     )
@@ -204,13 +213,23 @@ for n, point_key in enumerate(ooo):
     spread_lim_usr = [np.min(uuu["spread_usr"]), np.max(uuu["spread_usr"])]
 
     ax.plot(
-        uuu["depth_m"], uuu["spread_usr"], "ko", alpha=0.33, markersize=1.5
+        uuu["depth_m"],
+        uuu["spread_usr"],
+        CM["k"] + "o",
+        alpha=0.33,
+        markersize=1.5,
     )
-    ax.plot(uuu["depth_m"], uuu["spread_usr"], "k-", linewidth=1, alpha=0.33)
+    ax.plot(
+        uuu["depth_m"],
+        uuu["spread_usr"],
+        CM["k"] + "-",
+        linewidth=1,
+        alpha=0.33,
+    )
     ax.plot(
         [uuu["true_depth_m"], uuu["true_depth_m"]],
         [ymin_usr, spread_lim_usr[0]],
-        "k--",
+        CM["k"] + "--",
         linewidth=1,
         alpha=0.5,
     )

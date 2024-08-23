@@ -25,6 +25,8 @@ def write_default_config(cfg_dir, minimal):
 
     write_analysis_config(cfg_dir)
 
+    write_plot_config(cfg_dir)
+
 
 def write_instruments_config(cfg_dir, minimal):
     cfg_inst_dir = os.path.join(cfg_dir, "instruments")
@@ -270,5 +272,14 @@ def write_analysis_config(cfg_dir):
             * piont_obs_cfg["min_object_distance_m"],
             "image_containment_percentile": 80,
             "oversampling_beam_spread": 100,
+        },
+    )
+
+
+def write_plot_config(cfg_dir):
+    json_utils.write(
+        os.path.join(os.path.join(cfg_dir, "plot.json")),
+        {
+            "colormode": "default",
         },
     )

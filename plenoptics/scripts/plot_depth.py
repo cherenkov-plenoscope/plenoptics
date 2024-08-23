@@ -16,16 +16,16 @@ argparser = argparse.ArgumentParser()
 argparser.add_argument("--work_dir", type=str)
 argparser.add_argument("--out_dir", type=str)
 argparser.add_argument("--instrument_key", type=str)
-argparser.add_argument("--dark", action="store_true")
+argparser.add_argument("--colormode", default="default")
 
 args = argparser.parse_args()
 
-colormode = "dark" if args.dark else "default"
+colormode = args.colormode
 work_dir = args.work_dir
 out_dir = args.out_dir
 instrument_key = args.instrument_key
 
-PLT = plenoptics.utils.init_plot_config()
+PLT = plenoptics.plot.config()
 CM = PLT["colormodes"][colormode]
 sebplt.matplotlib.rcParams.update(PLT["matplotlib_rcparams"]["latex"])
 sebplt.plt.style.use(CM["style"])

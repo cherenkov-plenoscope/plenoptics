@@ -6,18 +6,21 @@ import plenoptics as abe
 import sebastians_matplotlib_addons as sebplt
 import argparse
 
-sebplt.matplotlib.rcParams.update(
-    plenoirf.summary.figure.MATPLOTLIB_RCPARAMS_LATEX
-)
-
 argparser = argparse.ArgumentParser()
 argparser.add_argument("--work_dir", type=str)
 argparser.add_argument("--out_dir", type=str)
+argparser.add_argument("--colormode", default="default")
 
 args = argparser.parse_args()
 
 work_dir = args.work_dir
 out_dir = args.out_dir
+colormode = args.colormode
+
+PLT = abe.plot.config()
+CM = PLT["colormodes"][colormode]
+sebplt.matplotlib.rcParams.update(PLT["matplotlib_rcparams"]["latex"])
+sebplt.plt.style.use(CM["style"])
 
 os.makedirs(out_dir, exist_ok=True)
 CMAPS = abe.plot.CMAPS

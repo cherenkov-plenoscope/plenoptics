@@ -130,3 +130,26 @@ CMAPS = {
         "linecolor": "black",
     },
 }
+
+
+def config():
+    c = {}
+    c["matplotlib_rcparams"] = {}
+    c["matplotlib_rcparams"]["latex"] = {
+        "mathtext.fontset": "cm",
+        "font.family": "STIXGeneral",
+    }
+    c["matplotlib_rcparams"]["waree"] = {
+        "font.family": "waree",
+    }
+    c["colormodes"] = {}
+    c["colormodes"]["default"] = {}
+    c["colormodes"]["default"]["k"] = "k"
+    c["colormodes"]["default"]["Greys"] = "Greys"
+    c["colormodes"]["default"]["style"] = "default"
+
+    c["colormodes"]["dark"] = {}
+    c["colormodes"]["dark"]["k"] = "w"
+    c["colormodes"]["dark"]["Greys"] = "gray"
+    c["colormodes"]["dark"]["style"] = "dark_background"
+    return c

@@ -27,13 +27,18 @@ argparser.add_argument(
     metavar="PLOT_DIR",
     type=str,
 )
+argparser.add_argument("--colormode", default="default")
+
 args = argparser.parse_args()
 
-sebplt.matplotlib.rcParams.update(
-    plenoirf.summary.figure.MATPLOTLIB_RCPARAMS_LATEX
-)
-
 plot_dir = args.plot_dir
+colormode = args.colormode
+
+PLT = abe.plot.config()
+CM = PLT["colormodes"][colormode]
+sebplt.matplotlib.rcParams.update(PLT["matplotlib_rcparams"]["latex"])
+sebplt.plt.style.use(CM["style"])
+
 os.makedirs(plot_dir, exist_ok=True)
 
 mirror_dimensions = json_utils.read(args.dimensions_path)

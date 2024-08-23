@@ -18,6 +18,32 @@ def LoggerStdout_if_None(logger):
         return logger
 
 
+def config_if_None(work_dir, config):
+    if config is None:
+        return json_utils.tree.read(os.path.join(work_dir, "config"))
+    else:
+        return config
+
+
+def pool_if_None(pool):
+    if pool is None:
+        return SerialPool()
+    else:
+        return pool
+
+
+class SerialPool:
+    """
+    Useful for debugging
+    """
+
+    def __init__(self):
+        pass
+
+    def map(func, iterable):
+        return [func(item) for item in iterable]
+
+
 def guess_scaling_of_num_photons_used_to_estimate_light_field_geometry(
     num_paxel_on_pixel_diagonal,
 ):
@@ -227,25 +253,3 @@ def zipfile_responses_read(file, job_number_keys=[]):
                     "raw_sensor_response"
                 ] = plenopy.raw_light_field_sensor_response.read(f=f)
     return out
-
-
-def init_plot_config():
-    c = {}
-    c["matplotlib_rcparams"] = {}
-    c["matplotlib_rcparams"]["latex"] = {
-        "mathtext.fontset": "cm",
-        "font.family": "STIXGeneral",
-    }
-    c["matplotlib_rcparams"]["waree"] = {
-        "font.family": "waree",
-    }
-    c["colormodes"] = {}
-    c["colormodes"]["default"] = {}
-    c["colormodes"]["default"]["k"] = "k"
-    c["colormodes"]["default"]["Greys"] = "Greys"
-    c["colormodes"]["default"]["style"] = "default"
-    c["colormodes"]["dark"] = {}
-    c["colormodes"]["dark"]["k"] = "w"
-    c["colormodes"]["dark"]["Greys"] = "gray"
-    c["colormodes"]["dark"]["style"] = "dark_background"
-    return c

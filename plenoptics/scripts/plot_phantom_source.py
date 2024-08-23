@@ -29,19 +29,22 @@ def gzip_read_raw_sensor_response_into_time_lixel_repr(path):
     return (_photon_arrival_times_s, _photon_lixel_ids)
 
 
-sebplt.matplotlib.rcParams.update(
-    plenoirf.summary.figure.MATPLOTLIB_RCPARAMS_LATEX
-)
-
 argparser = argparse.ArgumentParser()
 argparser.add_argument("--work_dir", type=str)
 argparser.add_argument("--out_dir", type=str)
 argparser.add_argument("--instrument_key", type=str)
+argparser.add_argument("--colormode", default="default")
 args = argparser.parse_args()
 
 work_dir = args.work_dir
 out_dir = args.out_dir
 instrument_key = args.instrument_key
+colormode = args.colormode
+
+PLT = plenoptics.plot.config()
+CM = PLT["colormodes"][colormode]
+sebplt.matplotlib.rcParams.update(PLT["matplotlib_rcparams"]["latex"])
+sebplt.plt.style.use(CM["style"])
 
 os.makedirs(out_dir, exist_ok=True)
 
@@ -153,10 +156,9 @@ for cmapkey in CMAPS:
             x=0.0,
             y=0.0,
             r=0.5 * max_FoV_diameter_deg,
-            linewidth=1.2,
+            linewidth=0.33,
             linestyle="-",
             color=CMAPS[cmapkey]["linecolor"],
-            alpha=0.1,
             num_steps=360 * 5,
         )
         ax.set_xlim(np.rad2deg(image_edge_bin["limits"]))
@@ -165,8 +167,7 @@ for cmapkey in CMAPS:
             ax=ax,
             xticks=image_edge_ticks_deg,
             yticks=image_edge_ticks_deg,
-            alpha=0.1,
-            linewidth=1.2,
+            linewidth=0.33,
             color=CMAPS[cmapkey]["linecolor"],
         )
         fig.savefig(fig_path)
@@ -211,23 +212,24 @@ ax = sebplt.add_axes(
     span=[0.0, 0.0, 1, 1],
 )
 for mesh in phantom_source_mesh:
-    phantom_source.plot.ax_add_mesh(ax=ax, mesh=mesh, color="k")
+    phantom_source.plot.ax_add_mesh(ax=ax, mesh=mesh, color=CM["k"])
 ax.set_aspect("equal")
 sebplt.ax_add_circle(
     ax=ax,
     x=0.0,
     y=0.0,
     r=0.5 * max_FoV_diameter_deg,
-    linewidth=1.2,
+    linewidth=0.6,
     linestyle="-",
-    color=CMAPS[cmapkey]["linecolor"],
-    alpha=0.1,
+    color=CM["k"],
     num_steps=360 * 5,
 )
 ax.set_xlim(np.rad2deg(image_edge_bin["limits"]))
 ax.set_ylim(np.rad2deg(image_edge_bin["limits"]))
 sebplt.ax_add_grid_with_explicit_ticks(
-    ax=ax, xticks=image_edge_ticks_deg, yticks=image_edge_ticks_deg, alpha=0.1
+    ax=ax,
+    xticks=image_edge_ticks_deg,
+    yticks=image_edge_ticks_deg,
 )
 fig.savefig(fig_path)
 sebplt.close(fig)
@@ -263,9 +265,8 @@ for imesh, mesh in enumerate(phantom_source_mesh):
         projection=projection,
         x_bin_edges=image_edge_ticks_deg,
         y_bin_edges=image_edge_ticks_deg,
-        alpha=0.33,
-        linewidth=0.4,
-        color="k",
+        linewidth=0.33,
+        color="grey",
         linestyle="-",
     )
     sebplt.pseudo3d.ax_add_circle(
@@ -274,16 +275,15 @@ for imesh, mesh in enumerate(phantom_source_mesh):
         x=0.0,
         y=0.0,
         r=0.5 * max_FoV_diameter_deg,
-        alpha=0.33,
-        linewidth=0.4,
-        color="k",
+        linewidth=0.33,
+        color="grey",
         linestyle="-",
     )
     sebplt.pseudo3d.ax_add_mesh(
         ax=ax,
         projection=projection,
         mesh=mesh,
-        color="k",
+        color=CM["k"],
         linestyle="-",
     )
 

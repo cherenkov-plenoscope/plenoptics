@@ -19,8 +19,11 @@ def init(work_dir, random_seed=42, minimal=False):
     default_config.write_default_config(cfg_dir=cfg_dir, minimal=minimal)
 
 
-def run(work_dir, pool, logger=None):
+def run(work_dir, pool=None, logger=None):
+    config = utils.config_if_None(work_dir=work_dir, config=None)
     logger = utils.LoggerStdout_if_None(logger=logger)
+    pool = utils.pool_if_None(pool=pool)
+
     logger.info("Start")
 
     logger.info("Make light-field-geometryies")
@@ -40,7 +43,9 @@ def run(work_dir, pool, logger=None):
     logger.info("Make Plots")
 
     logger.info("Plot mirror deformations")
-    pjobs = _plot_mirror_deformations_make_jobs(work_dir=work_dir)
+    pjobs = _plot_mirror_deformations_make_jobs(
+        work_dir=work_dir, config=config
+    )
     logger.info("{:d} jobs to do".format(len(pjobs)))
     pool.map(_run_script_job, pjobs)
 
@@ -51,12 +56,12 @@ def run(work_dir, pool, logger=None):
     plot_guide_stars_vs_offaxis(work_dir=work_dir, logger=logger)
 
     logger.info("Plot depth")
-    pjobs = _plot_depth_make_jobs(work_dir=work_dir)
+    pjobs = _plot_depth_make_jobs(work_dir=work_dir, config=config)
     logger.info("{:d} jobs to do".format(len(pjobs)))
     pool.map(_run_script_job, pjobs)
 
     logger.info("Plot phantom")
-    pjobs = _plot_phantom_source_make_jobs(work_dir=work_dir)
+    pjobs = _plot_phantom_source_make_jobs(work_dir=work_dir, config=config)
     logger.info("{:d} jobs to do".format(len(pjobs)))
     pool.map(_run_script_job, pjobs)
 
@@ -64,9 +69,8 @@ def run(work_dir, pool, logger=None):
     logger.info("Done")
 
 
-def _plot_mirror_deformations_make_jobs(work_dir):
-    cfg_dir = os.path.join(work_dir, "config")
-    config = json_utils.tree.read(cfg_dir)
+def _plot_mirror_deformations_make_jobs(work_dir, config=None):
+    config = utils.config_if_None(work_dir=work_dir, config=config)
 
     jobs = []
 
@@ -99,6 +103,8 @@ def _plot_mirror_deformations_make_jobs(work_dir):
                         mirror_dimensions_path,
                         mirror_deformations_path,
                         outpath,
+                        "--colormode",
+                        config["plot"]["colormode"],
                     ],
                 }
                 jobs.append(job)
@@ -106,9 +112,8 @@ def _plot_mirror_deformations_make_jobs(work_dir):
     return jobs
 
 
-def _plot_depth_make_jobs(work_dir):
-    cfg_dir = os.path.join(work_dir, "config")
-    config = json_utils.tree.read(cfg_dir)
+def _plot_depth_make_jobs(work_dir, config=None):
+    config = utils.config_if_None(work_dir=work_dir, config=config)
 
     jobs = []
     for instrument_key in config["observations"]["instruments"]:
@@ -128,6 +133,8 @@ def _plot_depth_make_jobs(work_dir):
                         ),
                         "--instrument_key",
                         instrument_key,
+                        "--colormode",
+                        config["plot"]["colormode"],
                     ],
                 }
                 jobs.append(job)
@@ -145,15 +152,16 @@ def _plot_depth_make_jobs(work_dir):
                         depth_refocus_out_dir,
                         "--instrument_key",
                         instrument_key,
+                        "--colormode",
+                        config["plot"]["colormode"],
                     ],
                 }
                 jobs.append(job)
     return jobs
 
 
-def _plot_phantom_source_make_jobs(work_dir):
-    cfg_dir = os.path.join(work_dir, "config")
-    config = json_utils.tree.read(cfg_dir)
+def _plot_phantom_source_make_jobs(work_dir, config=None):
+    config = utils.config_if_None(work_dir=work_dir, config=config)
 
     jobs = []
     for instrument_key in config["observations"]["instruments"]:
@@ -172,6 +180,8 @@ def _plot_phantom_source_make_jobs(work_dir):
                         out_dir,
                         "--instrument_key",
                         instrument_key,
+                        "--colormode",
+                        config["plot"]["colormode"],
                     ],
                 }
                 jobs.append(job)
@@ -197,8 +207,11 @@ def _run_script(script, argv):
     return subprocess.call(args)
 
 
-def plot_guide_stars(work_dir, pool, logger=None):
+def plot_guide_stars(work_dir, pool=None, logger=None, config=None):
     logger = utils.LoggerStdout_if_None(logger=logger)
+    pool = utils.pool_if_None(pool=pool)
+    config = utils.config_if_None(work_dir=work_dir, config=config)
+
     guide_stars_dir = os.path.join(work_dir, "plots", "guide_stars")
 
     if not os.path.exists(guide_stars_dir):
@@ -229,13 +242,18 @@ def plot_guide_stars(work_dir, pool, logger=None):
                         star_key,
                         "--vmax",
                         "{:e}".format(vmax),
+                        "--colormode",
+                        config["plot"]["colormode"],
                     ]
                     jobs.append(job)
 
         pool.map(_run_script_job, jobs)
 
 
-def plot_guide_stars_vs_offaxis(work_dir, logger):
+def plot_guide_stars_vs_offaxis(work_dir, logger=None, config=None):
+    logger = utils.LoggerStdout_if_None(logger=logger)
+    config = utils.config_if_None(work_dir=work_dir, config=config)
+
     out_dir = os.path.join(work_dir, "plots", "guide_stars_vs_offaxis")
     if not os.path.exists(out_dir):
         logger.info("Plot guide stars vs. offaxis")
@@ -246,6 +264,8 @@ def plot_guide_stars_vs_offaxis(work_dir, logger):
                 work_dir,
                 "--out_dir",
                 out_dir,
+                "--colormode",
+                config["plot"]["colormode"],
             ],
         )
 
