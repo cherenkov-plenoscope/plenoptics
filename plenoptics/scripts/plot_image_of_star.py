@@ -26,8 +26,8 @@ cmap_vmax = args.vmax
 
 PLT = plenoptics.plot.config()
 CM = PLT["colormodes"][colormode]
+sebplt.plt.style.use(colormode)
 sebplt.matplotlib.rcParams.update(PLT["matplotlib_rcparams"]["latex"])
-sebplt.plt.style.use(CM["style"])
 
 os.makedirs(out_dir, exist_ok=True)
 

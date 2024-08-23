@@ -146,10 +146,8 @@ def config():
     c["colormodes"]["default"] = {}
     c["colormodes"]["default"]["k"] = "k"
     c["colormodes"]["default"]["Greys"] = "Greys"
-    c["colormodes"]["default"]["style"] = "default"
 
-    c["colormodes"]["dark"] = {}
-    c["colormodes"]["dark"]["k"] = "w"
-    c["colormodes"]["dark"]["Greys"] = "gray"
-    c["colormodes"]["dark"]["style"] = "dark_background"
+    c["colormodes"]["dark_background"] = {}
+    c["colormodes"]["dark_background"]["k"] = "w"
+    c["colormodes"]["dark_background"]["Greys"] = "gray"
     return c

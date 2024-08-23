@@ -280,6 +280,6 @@ def write_plot_config(cfg_dir):
     json_utils.write(
         os.path.join(os.path.join(cfg_dir, "plot.json")),
         {
-            "colormode": "default",
+            "colormodes": ["default", "dark_background"],
         },
     )

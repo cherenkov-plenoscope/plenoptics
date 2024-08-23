@@ -76,38 +76,40 @@ def _plot_mirror_deformations_make_jobs(work_dir, config=None):
 
     # mirrors
     # -------
-    for mirror_key in config["mirrors"]:
-        mirror_dimensions_path = os.path.join(
-            work_dir, "config", "mirrors", mirror_key + ".json"
-        )
-        for deformation_key in config["mirror_deformations"]:
-            outpath = os.path.join(
-                work_dir,
-                "plots",
-                "mirrors",
-                mirror_key,
-                deformation_key,
+    for colormode_key in config["plot"]["colormodes"]:
+        for mirror_key in config["mirrors"]:
+            mirror_dimensions_path = os.path.join(
+                work_dir, "config", "mirrors", mirror_key + ".json"
             )
+            for deformation_key in config["mirror_deformations"]:
+                outpath = os.path.join(
+                    work_dir,
+                    "plots",
+                    colormode_key,
+                    "mirrors",
+                    mirror_key,
+                    deformation_key,
+                )
 
-            mirror_deformations_path = os.path.join(
-                work_dir,
-                "config",
-                "mirror_deformations",
-                deformation_key + ".json",
-            )
+                mirror_deformations_path = os.path.join(
+                    work_dir,
+                    "config",
+                    "mirror_deformations",
+                    deformation_key + ".json",
+                )
 
-            if not os.path.exists(outpath):
-                job = {
-                    "script": "plot_mirror_deformation",
-                    "argv": [
-                        mirror_dimensions_path,
-                        mirror_deformations_path,
-                        outpath,
-                        "--colormode",
-                        config["plot"]["colormode"],
-                    ],
-                }
-                jobs.append(job)
+                if not os.path.exists(outpath):
+                    job = {
+                        "script": "plot_mirror_deformation",
+                        "argv": [
+                            mirror_dimensions_path,
+                            mirror_deformations_path,
+                            outpath,
+                            "--colormode",
+                            colormode_key,
+                        ],
+                    }
+                    jobs.append(job)
 
     return jobs
 
@@ -116,47 +118,59 @@ def _plot_depth_make_jobs(work_dir, config=None):
     config = utils.config_if_None(work_dir=work_dir, config=config)
 
     jobs = []
-    for instrument_key in config["observations"]["instruments"]:
-        if "point" in config["observations"]["instruments"][instrument_key]:
-            depth_out_dir = os.path.join(
-                work_dir, "plots", "depth", instrument_key
-            )
-            if not os.path.exists(depth_out_dir):
-                job = {
-                    "script": "plot_depth",
-                    "argv": [
-                        "--work_dir",
-                        work_dir,
-                        "--out_dir",
-                        os.path.join(
-                            work_dir, "plots", "depth", instrument_key
-                        ),
-                        "--instrument_key",
-                        instrument_key,
-                        "--colormode",
-                        config["plot"]["colormode"],
-                    ],
-                }
-                jobs.append(job)
+    for colormode_key in config["plot"]["colormodes"]:
+        for instrument_key in config["observations"]["instruments"]:
+            if (
+                "point"
+                in config["observations"]["instruments"][instrument_key]
+            ):
+                depth_out_dir = os.path.join(
+                    work_dir, "plots", "depth", instrument_key
+                )
+                if not os.path.exists(depth_out_dir):
+                    job = {
+                        "script": "plot_depth",
+                        "argv": [
+                            "--work_dir",
+                            work_dir,
+                            "--out_dir",
+                            os.path.join(
+                                work_dir,
+                                "plots",
+                                colormode_key,
+                                "depth",
+                                instrument_key,
+                            ),
+                            "--instrument_key",
+                            instrument_key,
+                            "--colormode",
+                            colormode_key,
+                        ],
+                    }
+                    jobs.append(job)
 
-            depth_refocus_out_dir = os.path.join(
-                work_dir, "plots", "depth_refocus", instrument_key
-            )
-            if not os.path.exists(depth_refocus_out_dir):
-                job = {
-                    "script": "plot_depth_refocus",
-                    "argv": [
-                        "--work_dir",
-                        work_dir,
-                        "--out_dir",
-                        depth_refocus_out_dir,
-                        "--instrument_key",
-                        instrument_key,
-                        "--colormode",
-                        config["plot"]["colormode"],
-                    ],
-                }
-                jobs.append(job)
+                depth_refocus_out_dir = os.path.join(
+                    work_dir,
+                    "plots",
+                    colormode_key,
+                    "depth_refocus",
+                    instrument_key,
+                )
+                if not os.path.exists(depth_refocus_out_dir):
+                    job = {
+                        "script": "plot_depth_refocus",
+                        "argv": [
+                            "--work_dir",
+                            work_dir,
+                            "--out_dir",
+                            depth_refocus_out_dir,
+                            "--instrument_key",
+                            instrument_key,
+                            "--colormode",
+                            colormode_key,
+                        ],
+                    }
+                    jobs.append(job)
     return jobs
 
 
@@ -164,27 +178,31 @@ def _plot_phantom_source_make_jobs(work_dir, config=None):
     config = utils.config_if_None(work_dir=work_dir, config=config)
 
     jobs = []
-    for instrument_key in config["observations"]["instruments"]:
-        if "phantom" in config["observations"]["instruments"][instrument_key]:
-            out_dir = os.path.join(
-                work_dir, "plots", "phantom", instrument_key
-            )
+    for colormode_key in config["plot"]["colormodes"]:
+        for instrument_key in config["observations"]["instruments"]:
+            if (
+                "phantom"
+                in config["observations"]["instruments"][instrument_key]
+            ):
+                out_dir = os.path.join(
+                    work_dir, "plots", colormode_key, "phantom", instrument_key
+                )
 
-            if not os.path.exists(out_dir):
-                job = {
-                    "script": "plot_phantom_source",
-                    "argv": [
-                        "--work_dir",
-                        work_dir,
-                        "--out_dir",
-                        out_dir,
-                        "--instrument_key",
-                        instrument_key,
-                        "--colormode",
-                        config["plot"]["colormode"],
-                    ],
-                }
-                jobs.append(job)
+                if not os.path.exists(out_dir):
+                    job = {
+                        "script": "plot_phantom_source",
+                        "argv": [
+                            "--work_dir",
+                            work_dir,
+                            "--out_dir",
+                            out_dir,
+                            "--instrument_key",
+                            instrument_key,
+                            "--colormode",
+                            colormode_key,
+                        ],
+                    }
+                    jobs.append(job)
     return jobs
 
 
@@ -212,62 +230,68 @@ def plot_guide_stars(work_dir, pool=None, logger=None, config=None):
     pool = utils.pool_if_None(pool=pool)
     config = utils.config_if_None(work_dir=work_dir, config=config)
 
-    guide_stars_dir = os.path.join(work_dir, "plots", "guide_stars")
-
-    if not os.path.exists(guide_stars_dir):
-        logger.debug("run script 'plot_image_of_star_cmap'")
-        _run_script(
-            script="plot_image_of_star_cmap",
-            argv=["--work_dir", work_dir, "--out_dir", guide_stars_dir],
+    for colormode_key in config["plot"]["colormodes"]:
+        guide_stars_dir = os.path.join(
+            work_dir, "plots", colormode_key, "guide_stars"
         )
 
-        table_vmax = analysis.guide_stars.table_vmax(work_dir=work_dir)
-        vmax = analysis.guide_stars.table_vmax_max(table_vmax=table_vmax)
+        if not os.path.exists(guide_stars_dir):
+            logger.debug("run script 'plot_image_of_star_cmap'")
+            _run_script(
+                script="plot_image_of_star_cmap",
+                argv=["--work_dir", work_dir, "--out_dir", guide_stars_dir],
+            )
 
-        jobs = []
-        for instrument_key in table_vmax:
-            out_dir = os.path.join(guide_stars_dir, instrument_key)
-            if not os.path.exists(out_dir):
-                logger.debug("missing '{:s}'".format(out_dir))
-                for star_key in table_vmax[instrument_key]:
-                    job = {"script": "plot_image_of_star"}
-                    job["argv"] = [
-                        "--work_dir",
-                        work_dir,
-                        "--out_dir",
-                        out_dir,
-                        "--instrument_key",
-                        instrument_key,
-                        "--star_key",
-                        star_key,
-                        "--vmax",
-                        "{:e}".format(vmax),
-                        "--colormode",
-                        config["plot"]["colormode"],
-                    ]
-                    jobs.append(job)
+            table_vmax = analysis.guide_stars.table_vmax(work_dir=work_dir)
+            vmax = analysis.guide_stars.table_vmax_max(table_vmax=table_vmax)
 
-        pool.map(_run_script_job, jobs)
+            jobs = []
+            for instrument_key in table_vmax:
+                out_dir = os.path.join(guide_stars_dir, instrument_key)
+                if not os.path.exists(out_dir):
+                    logger.debug("missing '{:s}'".format(out_dir))
+                    for star_key in table_vmax[instrument_key]:
+                        job = {"script": "plot_image_of_star"}
+                        job["argv"] = [
+                            "--work_dir",
+                            work_dir,
+                            "--out_dir",
+                            out_dir,
+                            "--instrument_key",
+                            instrument_key,
+                            "--star_key",
+                            star_key,
+                            "--vmax",
+                            "{:e}".format(vmax),
+                            "--colormode",
+                            colormode_key,
+                        ]
+                        jobs.append(job)
+
+            pool.map(_run_script_job, jobs)
 
 
 def plot_guide_stars_vs_offaxis(work_dir, logger=None, config=None):
     logger = utils.LoggerStdout_if_None(logger=logger)
     config = utils.config_if_None(work_dir=work_dir, config=config)
 
-    out_dir = os.path.join(work_dir, "plots", "guide_stars_vs_offaxis")
-    if not os.path.exists(out_dir):
-        logger.info("Plot guide stars vs. offaxis")
-        _run_script(
-            script="plot_image_of_star_vs_offaxis",
-            argv=[
-                "--work_dir",
-                work_dir,
-                "--out_dir",
-                out_dir,
-                "--colormode",
-                config["plot"]["colormode"],
-            ],
+    for colormode_key in config["plot"]["colormodes"]:
+        out_dir = os.path.join(
+            work_dir, "plots", colormode_key, "guide_stars_vs_offaxis"
         )
+        if not os.path.exists(out_dir):
+            logger.info("Plot guide stars vs. offaxis")
+            _run_script(
+                script="plot_image_of_star_vs_offaxis",
+                argv=[
+                    "--work_dir",
+                    work_dir,
+                    "--out_dir",
+                    out_dir,
+                    "--colormode",
+                    colormode_key,
+                ],
+            )
 
 
 def mv_observation(work_dir, observation_key="phantom", postfix=".old"):
