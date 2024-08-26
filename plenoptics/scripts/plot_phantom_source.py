@@ -85,122 +85,157 @@ image_bins = [image_edge_bin["edges"], image_edge_bin["edges"]]
 # -----------------------------------------
 systematic_reco_over_true = 1.0169723853658978
 
-# find true depth
-# ---------------
-TRUE_DEPTH = config["observations"]["phantom"]["phantom_source_meshes_depth"]
-object_distances = np.array([TRUE_DEPTH[key] for key in TRUE_DEPTH])
-reco_object_distances = systematic_reco_over_true * object_distances
-
-images_dir = os.path.join(out_dir, "images.cache")
-os.makedirs(images_dir, exist_ok=True)
-
-img_vmax = 0.0
-for obj_idx in range(len(reco_object_distances)):
-    reco_object_distance = reco_object_distances[obj_idx]
-
-    image_path = os.path.join(images_dir, "{:06d}.float32".format(obj_idx))
-
-    if os.path.exists(image_path):
-        img = plenoptics.analysis.image.read_image(path=image_path)
-    else:
-        img = plenoptics.analysis.image.compute_image(
-            light_field_geometry=light_field_geometry,
-            light_field=phantom_source_light_field,
-            object_distance=reco_object_distance,
-            bins=image_bins,
-            prng=prng,
-        )
-        plenoptics.analysis.image.write_image(path=image_path, image=img)
-
-    img_vmax = np.max([img_vmax, np.max(img)])
-
 CMAPS = plenoptics.plot.CMAPS
 NPIX = 1280
+FIG_FILENAME_FORMAT = "instrument_{:s}_cmap_{:s}_{:06d}"
 
-FIG_FILENAME_FORMAT = "instrument_{:s}_cmap_{:s}_{:06d}.jpg"
+for focus_mode in ["sweep", "on_mesh_structures"]:
+    if focus_mode == "on_mesh_structures":
+        # find true depth
+        # ---------------
+        TRUE_DEPTH = config["observations"]["phantom"][
+            "phantom_source_meshes_depth"
+        ]
+        object_distances = np.array([TRUE_DEPTH[key] for key in TRUE_DEPTH])
+    else:
+        object_distances = np.geomspace(2.2e3, 2.2e4, 36)
+    reco_object_distances = systematic_reco_over_true * object_distances
 
-for cmapkey in CMAPS:
-    cmap_dir = os.path.join(out_dir, cmapkey)
-    os.makedirs(cmap_dir, exist_ok=True)
+    focusmode_dir = os.path.join(out_dir, focus_mode)
+    os.makedirs(focusmode_dir, exist_ok=True)
 
-    for obj_idx in range(len(object_distances)):
+    images_dir = os.path.join(focusmode_dir, "images.cache")
+    os.makedirs(images_dir, exist_ok=True)
+
+    img_vmax = 0.0
+    for obj_idx in range(len(reco_object_distances)):
+        reco_object_distance = reco_object_distances[obj_idx]
+
         image_path = os.path.join(images_dir, "{:06d}.float32".format(obj_idx))
-        img = plenoptics.analysis.image.read_image(path=image_path)
 
-        fig_filename = FIG_FILENAME_FORMAT.format(
-            instrument_key, cmapkey, obj_idx
+        if os.path.exists(image_path):
+            img = plenoptics.analysis.image.read_image(path=image_path)
+        else:
+            img = plenoptics.analysis.image.compute_image(
+                light_field_geometry=light_field_geometry,
+                light_field=phantom_source_light_field,
+                object_distance=reco_object_distance,
+                bins=image_bins,
+                prng=prng,
+            )
+            plenoptics.analysis.image.write_image(path=image_path, image=img)
+
+        img_vmax = np.max([img_vmax, np.max(img)])
+
+    for cmapkey in CMAPS:
+        cmap_dir = os.path.join(focusmode_dir, cmapkey)
+        os.makedirs(cmap_dir, exist_ok=True)
+
+        for obj_idx in range(len(object_distances)):
+            image_path = os.path.join(
+                images_dir, "{:06d}.float32".format(obj_idx)
+            )
+            img = plenoptics.analysis.image.read_image(path=image_path)
+
+            fig_filename = FIG_FILENAME_FORMAT.format(
+                instrument_key, cmapkey, obj_idx
+            )
+            fig_path = os.path.join(cmap_dir, fig_filename + ".jpg")
+
+            fig = sebplt.figure(
+                style={"rows": NPIX, "cols": NPIX, "fontsize": 1.0}
+            )
+            ax = sebplt.add_axes(fig=fig, span=[0.0, 0.0, 1, 1])
+            ax.set_aspect("equal")
+            cmap = ax.pcolormesh(
+                np.rad2deg(image_edge_bin["edges"]),
+                np.rad2deg(image_edge_bin["edges"]),
+                np.transpose(img) / img_vmax,
+                cmap=cmapkey,
+                norm=sebplt.plt_colors.PowerNorm(
+                    gamma=CMAPS[cmapkey]["gamma"],
+                    vmin=0.0,
+                    vmax=1.0,
+                ),
+            )
+            sebplt.ax_add_circle(
+                ax=ax,
+                x=0.0,
+                y=0.0,
+                r=0.5 * max_FoV_diameter_deg,
+                linewidth=0.33,
+                linestyle="-",
+                color=CMAPS[cmapkey]["linecolor"],
+                num_steps=360 * 5,
+            )
+            ax.set_xlim(np.rad2deg(image_edge_bin["limits"]))
+            ax.set_ylim(np.rad2deg(image_edge_bin["limits"]))
+            sebplt.ax_add_grid_with_explicit_ticks(
+                ax=ax,
+                xticks=image_edge_ticks_deg,
+                yticks=image_edge_ticks_deg,
+                linewidth=0.33,
+                color=CMAPS[cmapkey]["linecolor"],
+            )
+            fig.savefig(fig_path)
+            sebplt.close(fig)
+
+            # focus bar plot
+            # --------------
+            fig = sebplt.figure(
+                style={"rows": NPIX, "cols": NPIX // 4, "fontsize": 2.0}
+            )
+            ax = sebplt.add_axes(
+                fig=fig,
+                span=[0.75, 0.1, 0.2, 0.8],
+                style={"spines": ["left"], "axes": ["y"], "grid": False},
+            )
+            ax.set_ylim([0, 2.5e1])
+            ax.set_xlim([0, 1])
+            ax.set_ylabel("depth / km")
+            ax.plot(
+                [0, 1],
+                [
+                    object_distances[obj_idx] * 1e-3,
+                    object_distances[obj_idx] * 1e-3,
+                ],
+                color="white",
+                linewidth=2,
+            )
+            fig.savefig(os.path.join(cmap_dir, fig_filename + ".bar.jpg"))
+            sebplt.close(fig)
+
+        # colormap
+        # --------
+        fig_cmap = sebplt.figure(
+            style={"rows": 120, "cols": 1280, "fontsize": 1}
+        )
+        ax_cmap = sebplt.add_axes(fig_cmap, [0.1, 0.8, 0.8, 0.15])
+        ax_cmap.text(0.5, -4.7, r"intensity$\,/\,$1")
+        sebplt.plt.colorbar(
+            cmap, cax=ax_cmap, extend="max", orientation="horizontal"
+        )
+        fig_cmap_filename = "cmap_{:s}.jpg".format(cmapkey)
+        fig_cmap.savefig(os.path.join(cmap_dir, fig_cmap_filename))
+        sebplt.close(fig_cmap)
+
+        # avg image
+        # ---------
+        avg_img = np.zeros(shape=(NPIX, NPIX, 3), dtype=np.float32)
+        for obj_idx in range(len(object_distances)):
+            fig_filename = (
+                FIG_FILENAME_FORMAT.format(instrument_key, cmapkey, obj_idx)
+                + ".jpg"
+            )
+            fig_path = os.path.join(cmap_dir, fig_filename)
+            avg_img += skimage.io.imread(fig_path)
+        fig_filename = "instrument_{:s}_cmap_{:s}_average.jpg".format(
+            instrument_key, cmapkey
         )
         fig_path = os.path.join(cmap_dir, fig_filename)
-
-        fig = sebplt.figure(
-            style={"rows": NPIX, "cols": NPIX, "fontsize": 1.0}
-        )
-        ax = sebplt.add_axes(
-            fig=fig,
-            span=[0.0, 0.0, 1, 1],
-        )
-        ax.set_aspect("equal")
-        cmap = ax.pcolormesh(
-            np.rad2deg(image_edge_bin["edges"]),
-            np.rad2deg(image_edge_bin["edges"]),
-            np.transpose(img) / img_vmax,
-            cmap=cmapkey,
-            norm=sebplt.plt_colors.PowerNorm(
-                gamma=CMAPS[cmapkey]["gamma"],
-                vmin=0.0,
-                vmax=1.0,
-            ),
-        )
-        sebplt.ax_add_circle(
-            ax=ax,
-            x=0.0,
-            y=0.0,
-            r=0.5 * max_FoV_diameter_deg,
-            linewidth=0.33,
-            linestyle="-",
-            color=CMAPS[cmapkey]["linecolor"],
-            num_steps=360 * 5,
-        )
-        ax.set_xlim(np.rad2deg(image_edge_bin["limits"]))
-        ax.set_ylim(np.rad2deg(image_edge_bin["limits"]))
-        sebplt.ax_add_grid_with_explicit_ticks(
-            ax=ax,
-            xticks=image_edge_ticks_deg,
-            yticks=image_edge_ticks_deg,
-            linewidth=0.33,
-            color=CMAPS[cmapkey]["linecolor"],
-        )
-        fig.savefig(fig_path)
-        sebplt.close(fig)
-
-    # colormap
-    # --------
-    fig_cmap = sebplt.figure(style={"rows": 120, "cols": 1280, "fontsize": 1})
-    ax_cmap = sebplt.add_axes(fig_cmap, [0.1, 0.8, 0.8, 0.15])
-    ax_cmap.text(0.5, -4.7, r"intensity$\,/\,$1")
-    sebplt.plt.colorbar(
-        cmap, cax=ax_cmap, extend="max", orientation="horizontal"
-    )
-    fig_cmap_filename = "cmap_{:s}.jpg".format(cmapkey)
-    fig_cmap.savefig(os.path.join(cmap_dir, fig_cmap_filename))
-    sebplt.close(fig_cmap)
-
-    # avg image
-    # ---------
-    avg_img = np.zeros(shape=(NPIX, NPIX, 3), dtype=np.float32)
-    for obj_idx in range(len(object_distances)):
-        fig_filename = FIG_FILENAME_FORMAT.format(
-            instrument_key, cmapkey, obj_idx
-        )
-        fig_path = os.path.join(cmap_dir, fig_filename)
-        avg_img += skimage.io.imread(fig_path)
-    fig_filename = "instrument_{:s}_cmap_{:s}_average.jpg".format(
-        instrument_key, cmapkey
-    )
-    fig_path = os.path.join(cmap_dir, fig_filename)
-    avg_img /= len(object_distances)
-    avg_img = avg_img.astype(np.uint8)
-    skimage.io.imsave(fig_path, avg_img)
+        avg_img /= len(object_distances)
+        avg_img = avg_img.astype(np.uint8)
+        skimage.io.imsave(fig_path, avg_img)
 
 
 fig_filename = "phantom_source_meshes.jpg"
