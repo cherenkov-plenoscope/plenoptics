@@ -10,10 +10,12 @@ argparser = argparse.ArgumentParser()
 argparser.add_argument("--light_field_geometry_path", type=str)
 argparser.add_argument("--out_dir", type=str)
 argparser.add_argument("--colormode", default="default")
+argparser.add_argument("--ylim_based_on_num_channels", action="store_true")
 
 args = argparser.parse_args()
 
 colormode = args.colormode
+ylim_based_on_num_channels = args.ylim_based_on_num_channels
 light_field_geometry_path = args.light_field_geometry_path
 out_dir = args.out_dir
 
@@ -29,7 +31,6 @@ lfg = plenopy.LightFieldGeometry(light_field_geometry_path)
 FIGSTY = {"rows": 960, "cols": 1920, "fontsize": 2.0}
 AXSPAN = [0.12, 0.23, 0.87, 0.74]
 
-YLIM = np.array([1, 1e6])
 YLABEL = r"intensity$\,/\,$1"
 
 
@@ -183,7 +184,11 @@ for met in RANGES:
         if np.max(hists[key][met]["v_bin_counts"]) > rrr[met]["max_bin_count"]:
             rrr[met]["max_bin_count"] = np.max(hists[key][met]["v_bin_counts"])
 
-    rrr[met]["ylim_lin"] = [0, 1.1 * rrr[met]["max_bin_count"]]
+    if ylim_based_on_num_channels:
+        rrr[met]["ylim_lin"] = [0, lfg.number_lixel / 7]
+    else:
+        rrr[met]["ylim_lin"] = [0, 1.1 * rrr[met]["max_bin_count"]]
+
     rrr[met]["ylim_log"] = [
         1,
         10 ** np.ceil(np.log10(rrr[met]["max_bin_count"])),

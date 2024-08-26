@@ -42,6 +42,11 @@ def run(work_dir, pool=None, logger=None):
 
     logger.info("Make Plots")
 
+    logger.info("Plot beam statistics")
+    pjobs = _plot_beam_statistics_make_jobs(work_dir=work_dir, config=config)
+    logger.info("{:d} jobs to do".format(len(pjobs)))
+    pool.map(_run_script_job, pjobs)
+
     logger.info("Plot mirror deformations")
     pjobs = _plot_mirror_deformations_make_jobs(
         work_dir=work_dir, config=config
@@ -67,6 +72,45 @@ def run(work_dir, pool=None, logger=None):
 
     logger.info("Plots done")
     logger.info("Done")
+
+
+def _plot_beam_statistics_make_jobs(work_dir, config=None):
+    config = utils.config_if_None(work_dir=work_dir, config=config)
+    jobs = []
+    for ylim in [False, True]:
+        ylim_dir = "ylim_based_on_num_channels" if ylim else "ylim_guess"
+        for colormode_key in config["plot"]["colormodes"]:
+            for instrument_key in config["observations"]["instruments"]:
+                out_dir = os.path.join(
+                    work_dir,
+                    "plots",
+                    colormode_key,
+                    "beam_statistics",
+                    ylim_dir,
+                    instrument_key,
+                )
+                lfg_dir = os.path.join(
+                    work_dir,
+                    "instruments",
+                    instrument_key,
+                    "light_field_geometry",
+                )
+                if not os.path.exists(out_dir):
+                    job = {
+                        "script": "plot_beams_statistics",
+                        "argv": [
+                            "--light_field_geometry_path",
+                            lfg_dir,
+                            "--out_dir",
+                            out_dir,
+                            "--colormode",
+                            colormode_key,
+                        ],
+                    }
+                    if ylim:
+                        job["argv"] += ["--ylim_based_on_num_channels"]
+                    jobs.append(job)
+    return jobs
 
 
 def _plot_mirror_deformations_make_jobs(work_dir, config=None):
