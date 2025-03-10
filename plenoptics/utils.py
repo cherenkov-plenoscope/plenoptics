@@ -249,7 +249,7 @@ def zipfile_responses_read(file, job_number_keys=[]):
                 )
             name = posixpath.join(job_number_key, "raw_sensor_response.phs.gz")
             with ZipReader(zipfile=zin, name=name, mode="rb|gz") as f:
-                out[job_number_key][
-                    "raw_sensor_response"
-                ] = plenopy.raw_light_field_sensor_response.read(f=f)
+                out[job_number_key]["raw_sensor_response"] = (
+                    plenopy.raw_light_field_sensor_response.read(f=f)
+                )
     return out

@@ -46,9 +46,9 @@ lfg = plenopy.LightFieldGeometry(
 )
 
 plenoscope = {}
-plenoscope[
-    "focal_length_m"
-] = lfg.sensor_plane2imaging_system.expected_imaging_system_focal_length
+plenoscope["focal_length_m"] = (
+    lfg.sensor_plane2imaging_system.expected_imaging_system_focal_length
+)
 plenoscope["mirror_diameter_m"] = (
     2
     * lfg.sensor_plane2imaging_system.expected_imaging_system_max_aperture_radius

@@ -132,11 +132,11 @@ for instrument_key in INSTRUMENTS:
         psf_vs_oa[instrument_key]["std"][b] = np.std(
             psf_vs_oa_stats[instrument_key][b]
         )
-        psf_vs_oa[instrument_key]["median_spread_68"][
-            b
-        ] = plenoptics.analysis.statistical_estimators.median_spread(
-            a=psf_vs_oa_stats[instrument_key][b],
-            containment=0.68,
+        psf_vs_oa[instrument_key]["median_spread_68"][b] = (
+            plenoptics.analysis.statistical_estimators.median_spread(
+                a=psf_vs_oa_stats[instrument_key][b],
+                containment=0.68,
+            )
         )
         psf_vs_oa[instrument_key]["num"][b] = len(
             psf_vs_oa_stats[instrument_key][b]
