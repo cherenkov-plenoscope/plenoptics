@@ -1,7 +1,6 @@
 import numpy as np
 import binning_utils
-import scipy
-from scipy.interpolate import interp2d as scipy_interpolate_interp2d
+import scipy.interpolate
 import perlin_noise
 
 
@@ -61,11 +60,10 @@ def init_from_z_map(z_map, mirror_diameter_m):
             -mirror_diameter_m / 2, mirror_diameter_m / 2, z_map.shape[0] + 1
         )
     )
-    cc["z"] = scipy_interpolate_interp2d(
+    cc["z"] = scipy.interpolate.RectBivariateSpline(
         x=cc["pixel_bin"]["centers"],
         y=cc["pixel_bin"]["centers"],
         z=z_map,
-        kind="cubic",
     )
     return cc
 
@@ -110,4 +108,4 @@ def evaluate(deformation_map, x_m, y_m):
     ma = deformation_map["pixel_bin"]["limits"][1] + d
     assert mi < x_m < ma
     assert mi < y_m < ma
-    return deformation_map["z"](x_m, y_m)[0]
+    return deformation_map["z"](x_m, y_m)[0][0]
