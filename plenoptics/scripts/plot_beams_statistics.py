@@ -42,6 +42,9 @@ def make_percentile_mask(v, v_bin_edges, mask_percentile=90):
     v_bin_counts = make_histogram(v=v, v_bin_edges=v_bin_edges)
     v_total_counts = np.sum(v_bin_counts)
 
+    if v_total_counts == 0:
+        return np.zeros(num_bins)
+
     # watershed
     assert 0 <= mask_percentile <= 100
     target_fraction = mask_percentile / 100
