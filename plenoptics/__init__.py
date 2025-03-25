@@ -169,7 +169,7 @@ def _plot_depth_make_jobs(work_dir, config=None):
                 in config["observations"]["instruments"][instrument_key]
             ):
                 depth_out_dir = os.path.join(
-                    work_dir, "plots", "depth", instrument_key
+                    work_dir, "plots", colormode_key, "depth", instrument_key
                 )
                 if not os.path.exists(depth_out_dir):
                     job = {
@@ -178,13 +178,7 @@ def _plot_depth_make_jobs(work_dir, config=None):
                             "--work_dir",
                             work_dir,
                             "--out_dir",
-                            os.path.join(
-                                work_dir,
-                                "plots",
-                                colormode_key,
-                                "depth",
-                                instrument_key,
-                            ),
+                            depth_out_dir,
                             "--instrument_key",
                             instrument_key,
                             "--colormode",
