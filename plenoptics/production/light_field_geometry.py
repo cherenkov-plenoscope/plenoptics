@@ -204,20 +204,17 @@ def plot_run_job(job):
     )
     plot_dir = os.path.join(lfg_dir, "plot")
     plot_tar_path = os.path.join(lfg_dir, "plot.tar")
-    try:
-        # load
-        lfg = plenopy.light_field_geometry.LightFieldGeometry(path=lfg_dir)
 
-        # make plots
-        plenopy.plot.light_field_geometry.save_all(
-            light_field_geometry=lfg,
-            out_dir=plot_dir,
-        )
+    # load
+    lfg = plenopy.light_field_geometry.LightFieldGeometry(path=lfg_dir)
 
-        # put plots into tar
-        with tarfile.open(plot_tar_path, "w") as tar:
-            tar.add(name=plot_dir, arcname="plot", recursive=True)
-        shutil.rmtree(plot_dir)
+    # make plots
+    plenopy.plot.light_field_geometry.save_all(
+        light_field_geometry=lfg,
+        out_dir=plot_dir,
+    )
 
-    except Exception as e:
-        print(e)
+    # put plots into tar
+    with tarfile.open(plot_tar_path, "w") as tar:
+        tar.add(name=plot_dir, arcname="plot", recursive=True)
+    shutil.rmtree(plot_dir)
