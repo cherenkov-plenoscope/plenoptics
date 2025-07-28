@@ -199,7 +199,7 @@ for focus_mode in ["sweep", "on_mesh_structures"]:
                     object_distances[obj_idx] * 1e-3,
                     object_distances[obj_idx] * 1e-3,
                 ],
-                color="white",
+                color=CM["k"],
                 linewidth=2,
             )
             fig.savefig(os.path.join(cmap_dir, fig_filename + ".bar.jpg"))
