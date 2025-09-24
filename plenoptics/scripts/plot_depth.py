@@ -252,12 +252,8 @@ cm = confusion_matrix.init(
 )
 
 fig = sebplt.figure({"rows": 960, "cols": 1920, "fontsize": 1.5})
-ax_c = sebplt.add_axes(
-    fig=fig, span=plenoirf.summary.figure.AX_SPAN_WITH_COLORBAR_PAYLOAD
-)
-ax_cb = sebplt.add_axes(
-    fig=fig, span=plenoirf.summary.figure.AX_SPAN_WITH_COLORBAR_COLORBAR
-)
+ax_c = sebplt.add_axes(fig=fig, span=[0.2, 0.2, 0.55, 0.75])
+ax_cb = sebplt.add_axes(fig=fig, span=[0.8, 0.2, 0.025, 0.75])
 ax_c.plot(
     theory_depth_m,
     theory_depth_m / theory_depth_m,
