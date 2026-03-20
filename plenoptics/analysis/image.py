@@ -84,9 +84,9 @@ def write_image(path, image):
 
 def read_image(path):
     with open(path, "rb") as f:
-        x = np.fromstring(f.read(8), dtype=np.uint64)[0]
-        y = np.fromstring(f.read(8), dtype=np.uint64)[0]
-        img = np.fromstring(f.read(), dtype=np.float32)
+        x = np.frombuffer(f.read(8), dtype=np.uint64)[0]
+        y = np.frombuffer(f.read(8), dtype=np.uint64)[0]
+        img = np.frombuffer(f.read(), dtype=np.float32)
     img = np.reshape(img, (x, y), order="C")
     return img
 
